@@ -16,7 +16,13 @@ resource "aws_s3_bucket" "mi_bucket_web" {
       }
     ])
   }
+
+  tags = {
+    Name = "S3 Website Bucket"
+  }
 }
+
+
 
 resource "aws_s3_bucket_policy" "bucket_public_policy" {
   bucket = aws_s3_bucket.mi_bucket_web.id
@@ -33,6 +39,9 @@ resource "aws_s3_bucket_policy" "bucket_public_policy" {
       }
     ]
   })
+  depends_on = [
+    aws_s3_bucket_public_access_block.no_block
+  ]
 }
 
 resource "aws_s3_bucket_public_access_block" "no_block" {
