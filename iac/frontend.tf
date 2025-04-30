@@ -1,10 +1,10 @@
 resource "aws_s3_bucket_object" "frontend_files" {
-  for_each = fileset("${path.module}/frontend", "*/")
+  for_each = fileset("${path.module}/../frontend", "*/")
 
   bucket = aws_s3_bucket.mi_bucket_web.bucket
   key    = each.value
-  source = "${path.module}/frontend/${each.value}"
-  etag   = filemd5("${path.module}/frontend/${each.value}")
+  source = "${path.module}/../frontend/${each.value}"
+  etag   = filemd5("${path.module}/../frontend/${each.value}")
   content_type = lookup({
     html = "text/html"
     js   = "application/javascript"
