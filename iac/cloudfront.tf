@@ -1,5 +1,3 @@
-# cloudfront.tf
-
 resource "aws_cloudfront_distribution" "cdn" {
   origin {
     domain_name = aws_s3_bucket.mi_bucket_web.website_endpoint
@@ -47,4 +45,5 @@ resource "aws_cloudfront_distribution" "cdn" {
   tags = {
     Name = "CloudFrontForS3Website"
   }
+  depends_on = [aws_s3_bucket_policy.bucket_public_policy]
 }
