@@ -1,43 +1,56 @@
-# Rol compartido para todas las funciones Lambda
+# Rol principal para Lambda
 resource "aws_iam_role" "lambda_exec_role" {
   name = "lambda_exec_role"
 
+  # Política que permite a Lambda asumir este rol
   assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Principal = {
-          Service = "lambda.amazonaws.com"
-        },
-        Action = "sts:AssumeRole"
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        Service = "lambda.amazonaws.com"
       }
-    ]
+      Action = "sts:AssumeRole"
+    }]
   })
 }
 
-# Política personalizada para permitir logs en CloudWatch
+# Política con permisos para CloudWatch Logs y RDS
 resource "aws_iam_policy" "lambda_policy" {
-  name = "lambda_event_app_policy"
+  name = "lambda_policy"
 
   policy = jsonencode({
-    Version = "2012-10-17",
+    Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow",
+        Effect = "Allow"
         Action = [
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
           "logs:PutLogEvents"
-        ],
+        ]
         Resource = "arn:aws:logs:*:*:*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ec2:CreateNetworkInterface",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DeleteNetworkInterface"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = ["rds-db:connect"]
+        Resource = aws_db_instance.postgres_db.arn
       }
     ]
   })
 }
 
-# Adjuntar política al rol
-resource "aws_iam_role_policy_attachment" "lambda_logs_attach" {
+# Adjuntar la política al rol
+resource "aws_iam_role_policy_attachment" "lambda_policy_attach" {
   role       = aws_iam_role.lambda_exec_role.name
   policy_arn = aws_iam_policy.lambda_policy.arn
 }

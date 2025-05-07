@@ -1,14 +1,16 @@
-# VPC principal
+# VPC Configuration
 resource "aws_vpc" "main_vpc" {
-  cidr_block = "10.0.0.0/16"
-
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_hostnames = true  # Enable DNS hostnames
+  enable_dns_support   = true  # Enable DNS support
+  
   tags = {
     Name = "main-vpc"
   }
 }
 
 # Internet Gateway
-resource "aws_internet_gateway" "igw" {
+resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main_vpc.id
 
   tags = {
@@ -16,49 +18,50 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
-# Subnet Pública A
+# Public Subnets
 resource "aws_subnet" "public_a" {
-  vpc_id            = aws_vpc.main_vpc.id
-  cidr_block        = "10.0.1.0/24"
-  availability_zone = "us-east-2a"
+  vpc_id                  = aws_vpc.main_vpc.id
+  cidr_block              = "10.0.1.0/24"
+  availability_zone       = "us-east-2a"
+  map_public_ip_on_launch = true  # Auto-assign public IP
 
   tags = {
     Name = "public-subnet-a"
   }
 }
 
-# Subnet Pública B
 resource "aws_subnet" "public_b" {
-  vpc_id            = aws_vpc.main_vpc.id
-  cidr_block        = "10.0.2.0/24"
-  availability_zone = "us-east-2b"
+  vpc_id                  = aws_vpc.main_vpc.id
+  cidr_block              = "10.0.2.0/24"
+  availability_zone       = "us-east-2b"
+  map_public_ip_on_launch = true  # Auto-assign public IP
 
   tags = {
     Name = "public-subnet-b"
   }
 }
 
-# Tabla de Rutas Pública
-resource "aws_route_table" "public_rt" {
+# Route Table
+resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main_vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.igw.id
+    gateway_id = aws_internet_gateway.main.id
   }
 
   tags = {
-    Name = "public-route-table"
+    Name = "public-rt"
   }
 }
 
-# Asociaciones Subnets - Tabla de rutas
-resource "aws_route_table_association" "assoc_a" {
+# Route Table Associations
+resource "aws_route_table_association" "public_a" {
   subnet_id      = aws_subnet.public_a.id
-  route_table_id = aws_route_table.public_rt.id
+  route_table_id = aws_route_table.public.id
 }
 
-resource "aws_route_table_association" "assoc_b" {
+resource "aws_route_table_association" "public_b" {
   subnet_id      = aws_subnet.public_b.id
-  route_table_id = aws_route_table.public_rt.id
+  route_table_id = aws_route_table.public.id
 }
