@@ -12,3 +12,8 @@ output "lambda_exec_role_arn" {
   value       = aws_iam_role.lambda_exec_role.arn
   description = "ARN del rol compartido de ejecución Lambda"
 }
+
+output "cloudfront_url" {
+  description = "Dominio público para acceder al sitio web vía CloudFront"
+  value       = "https://${aws_cloudfront_distribution.cdn.domain_name}"
+}

@@ -1,12 +1,14 @@
+resource "aws_cloudfront_origin_access_identity" "oai" {
+  comment = "OAI para acceso seguro desde CloudFront a bucket S3"
+}
+
 resource "aws_cloudfront_distribution" "cdn" {
   origin {
-    domain_name = aws_s3_bucket.mi_bucket_web.website_endpoint
-    origin_id   = "S3WebsiteOrigin"
-    custom_origin_config {
-      http_port              = 80
-      https_port             = 443
-      origin_protocol_policy = "http-only"
-      origin_ssl_protocols   = ["TLSv1.2"]
+    domain_name = aws_s3_bucket.mi_bucket_web.bucket_regional_domain_name
+    origin_id   = "S3Origin"
+
+    s3_origin_config {
+      origin_access_identity = aws_cloudfront_origin_access_identity.oai.cloudfront_access_identity_path
     }
   }
 
@@ -18,7 +20,7 @@ resource "aws_cloudfront_distribution" "cdn" {
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "S3WebsiteOrigin"
+    target_origin_id = "S3Origin"
 
     forwarded_values {
       query_string = false
@@ -45,5 +47,6 @@ resource "aws_cloudfront_distribution" "cdn" {
   tags = {
     Name = "CloudFrontForS3Website"
   }
-  depends_on = [aws_s3_bucket_policy.bucket_public_policy]
+
+  depends_on = [aws_s3_bucket_policy.bucket_oai_policy]
 }

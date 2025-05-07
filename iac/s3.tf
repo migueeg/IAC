@@ -24,31 +24,30 @@ resource "aws_s3_bucket" "mi_bucket_web" {
 
 
 
-resource "aws_s3_bucket_policy" "bucket_public_policy" {
+resource "aws_s3_bucket_policy" "bucket_oai_policy" {
   bucket = aws_s3_bucket.mi_bucket_web.id
 
   policy = jsonencode({
-    Version = "2012-10-17"
+    Version = "2012-10-17",
     Statement = [
       {
-        Sid       = "PublicReadGetObject"
-        Effect    = "Allow"
-        Principal = "*"
-        Action    = "s3:GetObject"
+        Sid       = "AllowCloudFrontOAI",
+        Effect    = "Allow",
+        Principal = {
+          AWS = aws_cloudfront_origin_access_identity.oai.iam_arn
+        },
+        Action    = "s3:GetObject",
         Resource  = "${aws_s3_bucket.mi_bucket_web.arn}/*"
       }
     ]
   })
-  depends_on = [
-    aws_s3_bucket_public_access_block.no_block
-  ]
 }
 
 resource "aws_s3_bucket_public_access_block" "no_block" {
   bucket = aws_s3_bucket.mi_bucket_web.id
 
-  block_public_acls       = false
-  block_public_policy     = false
-  ignore_public_acls      = false
-  restrict_public_buckets = false
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
