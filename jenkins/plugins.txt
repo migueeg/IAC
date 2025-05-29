@@ -1,0 +1,8 @@
+configuration-as-code:latest
+workflow-aggregator:latest
+docker-plugin:latest
+git:latest
+job-dsl:latest
+generic-webhook-trigger:latest
+credentials
+credentials-binding
