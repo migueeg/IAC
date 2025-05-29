@@ -1,0 +1,114 @@
+jenkins:
+  systemMessage: "Jenkins configurado automáticamente con JCasC"
+  numExecutors: 2
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "admin"
+          password: "admin"
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+
+  nodes:
+    - permanent:
+        name: "agente-jenkins"
+        remoteFS: "/home/jenkins"
+        numExecutors: 1
+        labelString: "worker"
+        mode: NORMAL
+        launcher:
+          ssh:
+            host: "agente-jenkins"
+            port: 22
+            credentialsId: "agente-creds"
+            javaPath: "/usr/bin/java"
+            jvmOptions: ""
+            launchTimeoutSeconds: 60
+            maxNumRetries: 3
+            retryWaitTime: 15
+        retentionStrategy:
+          always: {}
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - string:
+              scope: GLOBAL
+              id: "AWS_ACCESS_KEY_ID"
+              secret: "${AWS_ACCESS_KEY_ID}"
+              description: "clave acceso temporal"
+          - string:
+              scope: GLOBAL
+              id: "AWS_SECRET_ACCESS_KEY"
+              secret: "${AWS_SECRET_ACCESS_KEY}"
+              description: "clave secreta temporal"
+          - string:
+              scope: GLOBAL
+              id: "AWS_SESSION_TOKEN"
+              secret: "${AWS_SESSION_TOKEN}"
+              description: "token temporal"
+          - usernamePassword:
+              scope: GLOBAL
+              id: "agente-creds"
+              username: "jenkins"
+              password: "jenkins"
+              description: "Credenciales SSH del agente"
+
+jobs:
+  - script: >
+      pipelineJob('deploy-iac-govench') {
+        definition {
+          cps {
+            script("""
+              pipeline {
+                agent any
+                stages {
+                  stage('Clonar Repositorio') {
+                    steps {
+                      git branch: 'feature/jenkins', url: 'https://github.com/migueeg/IAC.git'
+                    }
+                  }
+                  stage('Terraform Init') {
+                    steps {
+                      withCredentials([
+                        string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
+                        string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+                        string(credentialsId: 'AWS_SESSION_TOKEN', variable: 'AWS_SESSION_TOKEN')
+                      ]) {
+                        sh '''
+                          export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+                          export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+                          export AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN
+                          cd iac
+                          terraform init
+                        '''
+                      }
+                    }
+                  }
+                  stage('Terraform Plan') {
+                    steps {
+                      withCredentials([
+                        string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
+                        string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+                        string(credentialsId: 'AWS_SESSION_TOKEN', variable: 'AWS_SESSION_TOKEN')
+                      ]) {
+                        sh '''
+                          export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+                          export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+                          export AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN
+                          cd iac
+                          terraform plan
+                        '''
+                      }
+                    }
+                  }
+                }
+              }
+            """.stripIndent())
+            sandbox()
+          }
+        }
+      }
