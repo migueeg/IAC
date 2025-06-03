@@ -1,8 +1,4 @@
-variable "lambda_function_name_create_event" {
-  description = "Nombre de la función Lambda para crear eventos"
-  default     = "lambda-create-event"
-}
-
+# Archivo ZIP para la función Lambda
 data "archive_file" "lambda_create_event" {
   type        = "zip"
   source_dir  = "${path.module}/../createEvent"
@@ -15,12 +11,20 @@ resource "aws_lambda_function" "create_event" {
   source_code_hash = data.archive_file.lambda_create_event.output_base64sha256
   handler          = "index.handler"
   runtime          = "nodejs16.x"
-  role             = aws_iam_role.lambda_exec_role.arn
+  role            = aws_iam_role.lambda_exec_role.arn
+  
+  vpc_config {
+    subnet_ids         = [aws_subnet.public_a.id, aws_subnet.public_b.id]
+    security_group_ids = [aws_security_group.lambda_sg.id]
+  }
 
   environment {
     variables = {
-      STAGE = "dev"
+      STAGE     = var.environment
+      DB_HOST   = aws_db_instance.postgres_db.endpoint
+      DB_NAME   = aws_db_instance.postgres_db.db_name
+      DB_USER   = var.db_username
+      DB_PASS   = var.db_password
     }
   }
-
 }
