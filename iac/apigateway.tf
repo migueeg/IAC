@@ -16,6 +16,12 @@ resource "aws_api_gateway_resource" "login_user" {
   path_part   = "login"
 }
 
+resource "aws_api_gateway_resource" "register_event" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  parent_id   = aws_api_gateway_rest_api.main.root_resource_id
+  path_part   = "register"
+}
+
 # Métodos POST
 resource "aws_api_gateway_method" "post_create_event" {
   rest_api_id   = aws_api_gateway_rest_api.main.id
@@ -30,6 +36,14 @@ resource "aws_api_gateway_method" "post_login_user" {
   http_method   = "POST"
   authorization = "NONE"
 }
+
+resource "aws_api_gateway_method" "post_register_event" {
+  rest_api_id   = aws_api_gateway_rest_api.main.id
+  resource_id   = aws_api_gateway_resource.register_event.id
+  http_method   = "POST"
+  authorization = "NONE"
+}
+
 
 # Integraciones Lambda
 resource "aws_api_gateway_integration" "create_event" {
@@ -50,11 +64,21 @@ resource "aws_api_gateway_integration" "login_user" {
   uri                     = aws_lambda_function.login_user.invoke_arn
 }
 
+resource "aws_api_gateway_integration" "register_event" {
+  rest_api_id             = aws_api_gateway_rest_api.main.id
+  resource_id             = aws_api_gateway_resource.register_event.id
+  http_method             = aws_api_gateway_method.post_register_event.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.register_event.invoke_arn
+}
+
 # Deployment y stage
 resource "aws_api_gateway_deployment" "deployment" {
   depends_on = [
     aws_api_gateway_integration.create_event,
-    aws_api_gateway_integration.login_user
+    aws_api_gateway_integration.login_user,
+    aws_api_gateway_integration.register_event
   ]
   rest_api_id = aws_api_gateway_rest_api.main.id
   stage_name  = "dev"
@@ -76,3 +100,12 @@ resource "aws_lambda_permission" "api_gateway_login_user" {
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.main.execution_arn}/*/POST/login"
 }
+
+resource "aws_lambda_permission" "api_gateway_register_event" {
+  statement_id  = "AllowExecutionFromAPIGatewayRegisterEvent"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.register_event.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.main.execution_arn}/*/POST/register"
+}
+
