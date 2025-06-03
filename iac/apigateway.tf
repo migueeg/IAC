@@ -1,19 +1,20 @@
+# API Gateway
 resource "aws_api_gateway_rest_api" "main" {
-  name        = "eventAppApi"
-  description = "API Gateway para funciones Lambda createEvent y loginUser"
+  name        = "eventos-api"
+  description = "API para eventos"
 }
 
-# Recursos de ruta
-resource "aws_api_gateway_resource" "create_event" {
-  rest_api_id = aws_api_gateway_rest_api.main.id
-  parent_id   = aws_api_gateway_rest_api.main.root_resource_id
-  path_part   = "createevent"
-}
-
-resource "aws_api_gateway_resource" "login_user" {
+# Recursos
+resource "aws_api_gateway_resource" "login" {
   rest_api_id = aws_api_gateway_rest_api.main.id
   parent_id   = aws_api_gateway_rest_api.main.root_resource_id
   path_part   = "login"
+}
+
+resource "aws_api_gateway_resource" "eventos" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  parent_id   = aws_api_gateway_rest_api.main.root_resource_id
+  path_part   = "eventos"
 }
 
 resource "aws_api_gateway_resource" "register_event" {
@@ -23,16 +24,16 @@ resource "aws_api_gateway_resource" "register_event" {
 }
 
 # Métodos POST
-resource "aws_api_gateway_method" "post_create_event" {
+resource "aws_api_gateway_method" "login_post" {
   rest_api_id   = aws_api_gateway_rest_api.main.id
-  resource_id   = aws_api_gateway_resource.create_event.id
+  resource_id   = aws_api_gateway_resource.login.id
   http_method   = "POST"
   authorization = "NONE"
 }
 
-resource "aws_api_gateway_method" "post_login_user" {
+resource "aws_api_gateway_method" "eventos_post" {
   rest_api_id   = aws_api_gateway_rest_api.main.id
-  resource_id   = aws_api_gateway_resource.login_user.id
+  resource_id   = aws_api_gateway_resource.eventos.id
   http_method   = "POST"
   authorization = "NONE"
 }
@@ -44,24 +45,23 @@ resource "aws_api_gateway_method" "post_register_event" {
   authorization = "NONE"
 }
 
-
 # Integraciones Lambda
-resource "aws_api_gateway_integration" "create_event" {
+resource "aws_api_gateway_integration" "login_integration" {
   rest_api_id             = aws_api_gateway_rest_api.main.id
-  resource_id             = aws_api_gateway_resource.create_event.id
-  http_method             = aws_api_gateway_method.post_create_event.http_method
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.create_event.invoke_arn
-}
-
-resource "aws_api_gateway_integration" "login_user" {
-  rest_api_id             = aws_api_gateway_rest_api.main.id
-  resource_id             = aws_api_gateway_resource.login_user.id
-  http_method             = aws_api_gateway_method.post_login_user.http_method
+  resource_id             = aws_api_gateway_resource.login.id
+  http_method             = aws_api_gateway_method.login_post.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.login_user.invoke_arn
+}
+
+resource "aws_api_gateway_integration" "eventos_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.main.id
+  resource_id             = aws_api_gateway_resource.eventos.id
+  http_method             = aws_api_gateway_method.eventos_post.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.create_event.invoke_arn
 }
 
 resource "aws_api_gateway_integration" "register_event" {
@@ -74,31 +74,37 @@ resource "aws_api_gateway_integration" "register_event" {
 }
 
 # Deployment y stage
-resource "aws_api_gateway_deployment" "deployment" {
+resource "aws_api_gateway_deployment" "api_deployment" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  
   depends_on = [
-    aws_api_gateway_integration.create_event,
-    aws_api_gateway_integration.login_user,
+    aws_api_gateway_integration.login_integration,
+    aws_api_gateway_integration.eventos_integration,
     aws_api_gateway_integration.register_event
   ]
-  rest_api_id = aws_api_gateway_rest_api.main.id
-  stage_name  = "dev"
+}
+
+resource "aws_api_gateway_stage" "api_stage" {
+  deployment_id = aws_api_gateway_deployment.api_deployment.id
+  rest_api_id   = aws_api_gateway_rest_api.main.id
+  stage_name    = var.environment
 }
 
 # Permisos Lambda para invocación desde API Gateway
-resource "aws_lambda_permission" "api_gateway_create_event" {
-  statement_id  = "AllowExecutionFromAPIGatewayCreateEvent"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.create_event.function_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.main.execution_arn}/*/POST/createevent"
-}
-
-resource "aws_lambda_permission" "api_gateway_login_user" {
-  statement_id  = "AllowExecutionFromAPIGatewayLoginUser"
+resource "aws_lambda_permission" "api_gateway_login" {
+  statement_id  = "AllowAPIGatewayInvokeLogin"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.login_user.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.main.execution_arn}/*/POST/login"
+  source_arn    = "${aws_api_gateway_rest_api.main.execution_arn}/*/*"
+}
+
+resource "aws_lambda_permission" "api_gateway_eventos" {
+  statement_id  = "AllowAPIGatewayInvokeEventos"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.create_event.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.main.execution_arn}/*/*"
 }
 
 resource "aws_lambda_permission" "api_gateway_register_event" {
