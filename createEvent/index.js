@@ -1,7 +1,11 @@
 const { Pool } = require('pg');
+const AWS = require('aws-sdk');
+
+AWS.config.update({ region: 'us-east-2' });
+const kinesis = new AWS.Kinesis();
 
 const pool = new Pool({
-  host: process.env.DB_HOST.split(':')[0], // Separamos el host del puerto
+  host: process.env.DB_HOST.split(':')[0],
   database: process.env.DB_NAME,
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
@@ -22,6 +26,24 @@ exports.handler = async (event) => {
     
     const result = await client.query(query, values);
     client.release();
+
+    // Enviar a Kinesis
+    const payload = {
+      id: Date.now(),
+      title,
+      description,
+      date,
+      location
+    };
+
+    const kinesisParams = {
+      Data: JSON.stringify(payload),
+      PartitionKey: String(Date.now()),
+      StreamName: 'event-stream'
+    };
+
+    await kinesis.putRecord(kinesisParams).promise();
+    console.log("Evento enviado a Kinesis:", payload);
     
     return {
       statusCode: 201,
