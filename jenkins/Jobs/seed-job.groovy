@@ -20,6 +20,29 @@ pipelineJob('deploy-iac-govench') {
                 sh 'cd iac && terraform init'
               }
             }
+            stage('Terraform Plan') {
+              steps {
+                sh 'cd iac && terraform plan'
+              }
+            }
+            stage('Terraform Apply') {
+              steps {
+                sh 'cd iac && terraform apply -auto-approve'
+              }
+            }
+
+            stage('Esperar 5 minutos') {
+              steps {
+                echo 'Esperando 5 minutos antes de destruir los recursos...'
+                sleep time: 5, unit: 'MINUTES'
+              }
+            }
+            stage('Terraform Destroy') {
+              steps {
+                sh 'cd iac && terraform destroy -auto-approve'
+              }
+            }
+
           }
         }
       """.stripIndent())
