@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - ./jenkins_home:/var/jenkins_home
+      - ./casc_configs:/var/jenkins_home/casc_configs
+      - ./jobs:/var/jenkins_home/jobs
+    env_file:
+      - .env
+    environment:
+      - CASC_JENKINS_CONFIG=/var/jenkins_home/casc_configs/jenkins.yaml
+
+
+  agente-jenkins:
+    image: jenkins/inbound-agent:latest 
+    container_name: agente-jenkins
+    environment:
+      - JENKINS_URL=http://jenkins:8080
+      - JENKINS_AGENT_NAME=agente-jenkins
+      - JENKINS_SECRET= # aquí va el secret que vamos a obtener
+    depends_on:
+      - jenkins
+    volumes:
+      - ./agent_home:/home/jenkins  

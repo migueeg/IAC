@@ -1,5 +1,7 @@
+# Terraform
 .terraform/
 terraform.tfstate
 terraform.tfstate.backup
-# *.zip
+*.zip
 node_modules/ 
+.env

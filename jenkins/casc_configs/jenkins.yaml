@@ -1,0 +1,162 @@
+jenkins:
+  systemMessage: "Jenkins configurado automáticamente con JCasC"
+  numExecutors: 2
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "admin"
+          password: "admin"
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+
+
+  nodes:
+    - permanent:
+        name: "agente-jenkins"
+        remoteFS: "/home/jenkins"
+        numExecutors: 1
+        labelString: "worker"
+        mode: NORMAL
+        launcher:
+          ssh:
+            host: "agente-jenkins"
+            port: 22
+            credentialsId: "agente-creds"
+            javaPath: "/usr/bin/java"
+            launchTimeoutSeconds: 60
+            maxNumRetries: 3
+            retryWaitTime: 15
+        retentionStrategy:
+          always: {}
+
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - usernamePassword:
+              scope: GLOBAL
+              id: "agente-creds"
+              username: "jenkins"
+              password: "jenkins"
+              description: "Credenciales SSH del agente"
+          - string:
+              scope: GLOBAL
+              id: "AWS_ACCESS_KEY_ID"
+              secret: "${AWS_ACCESS_KEY_ID}"
+              description: "Access Key AWS"
+          - string:
+              scope: GLOBAL
+              id: "AWS_SECRET_ACCESS_KEY"
+              secret: "${AWS_SECRET_ACCESS_KEY}"
+              description: "Secret Key AWS"
+          - string:
+              scope: GLOBAL
+              id: "AWS_SESSION_TOKEN"
+              secret: "${AWS_SESSION_TOKEN}"
+              description: "Session Token AWS"
+
+
+jobs:
+  - script: >
+      pipelineJob('deploy-iac-linkbyte') {
+        definition {
+          cps {
+            script("""\
+              pipeline {
+                agent any
+                environment {
+                  TF_IN_AUTOMATION = 'true'
+                }
+                stages {
+                  stage('Checkout') {
+                    steps {
+                      git branch: 'develop', url: 'https://github.com/migueeg/IAC.git'
+                    }
+                  }
+                  stage('Terraform Init') {
+                    steps {
+                      withCredentials([
+                        string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
+                        string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+                        string(credentialsId: 'AWS_SESSION_TOKEN', variable: 'AWS_SESSION_TOKEN')
+                      ]) {
+                        sh '''
+                          export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+                          export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+                          export AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN
+                          cd iac
+                          terraform init
+                        '''
+                      }
+                    }
+                  }
+                  stage('Terraform Plan') {
+                    steps {
+                      withCredentials([
+                        string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
+                        string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+                        string(credentialsId: 'AWS_SESSION_TOKEN', variable: 'AWS_SESSION_TOKEN')
+                      ]) {
+                        sh '''
+                          export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+                          export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+                          export AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN
+                          cd iac
+                          terraform plan
+                        '''
+                      }
+                    }
+                  }
+                  stage('Terraform Apply') {
+                    steps {
+                      withCredentials([
+                        string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
+                        string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+                        string(credentialsId: 'AWS_SESSION_TOKEN', variable: 'AWS_SESSION_TOKEN')
+                      ]) {
+                        sh '''
+                          export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+                          export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+                          export AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN
+                          cd iac
+                          terraform apply -auto-approve
+                        '''
+                      }
+                    }
+                  }
+
+                  stage('Esperar 5 minutos') {
+                    steps {
+                      echo 'Esperando 5 minutos antes del destroy...'
+                      sleep time: 5, unit: 'MINUTES'
+                    }
+                  }
+
+                  stage('Terraform Destroy') {
+                    steps {
+                      withCredentials([
+                        string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
+                        string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+                        string(credentialsId: 'AWS_SESSION_TOKEN', variable: 'AWS_SESSION_TOKEN')
+                      ]) {
+                        sh '''
+                          export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+                          export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+                          export AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN
+                          cd iac
+                          terraform destroy -auto-approve
+                        '''
+                      }
+                    }
+                  }
+
+                }
+              }
+            """.stripIndent())
+            sandbox()
+          }
+        }
+      }
