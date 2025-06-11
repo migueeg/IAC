@@ -6,11 +6,17 @@ resource "aws_lambda_function" "sqs_ses_consumer" {
   runtime       = "nodejs16.x"
   role          = aws_iam_role.lambda_exec_role.arn
 
+  reserved_concurrent_executions = var.lambda_reserved_concurrency
+
   environment {
     variables = {
       EMAIL_FROM = "govench6@gmail.com"
       EMAIL_TO   = "govench6@gmail.com"
     }
+  }
+
+    tracing_config {
+    mode = "PassThrough"
   }
 }
 

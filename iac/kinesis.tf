@@ -4,6 +4,9 @@ resource "aws_kinesis_stream" "event_stream" {
   retention_period = 24
   shard_level_metrics = ["IncomingBytes", "OutgoingBytes"]
 
+  encryption_type      = "KMS"
+  kms_key_id           = aws_kms_key.kinesis_cmk.arn
+
   tags = {
     Environment = "dev"
     Name        = "event-stream"

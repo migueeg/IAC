@@ -18,6 +18,8 @@ resource "aws_lambda_function" "create_event" {
     security_group_ids = [aws_security_group.lambda_sg.id]
   }
 
+  reserved_concurrent_executions = var.lambda_reserved_concurrency
+
   environment {
     variables = {
       STAGE     = var.environment

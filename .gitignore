@@ -5,3 +5,4 @@ terraform.tfstate.backup
 *.zip
 node_modules/ 
 .env
+checkov/results

@@ -2,6 +2,10 @@
 resource "aws_api_gateway_rest_api" "main" {
   name        = "eventos-api"
   description = "API para eventos"
+
+    lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # Recursos
@@ -82,13 +86,42 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     aws_api_gateway_integration.eventos_integration,
     aws_api_gateway_integration.register_event
   ]
+    lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_api_gateway_stage" "api_stage" {
   deployment_id = aws_api_gateway_deployment.api_deployment.id
   rest_api_id   = aws_api_gateway_rest_api.main.id
   stage_name    = var.environment
+
+  xray_tracing_enabled = true
+  cache_cluster_enabled = true
+  cache_cluster_size    = "0.5"  
+
+  method_settings {
+    method_path            = "*/*"
+    caching_enabled        = true
+    cache_ttl_in_seconds   = 300
+    cache_data_encrypted   = true
+    logging_level          = "INFO"
+    metrics_enabled        = true
+  }
+
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.api_gw_access_logs.arn
+    format = jsonencode({
+      requestId      = "$context.requestId"
+      ip             = "$context.identity.sourceIp"
+      requestTime    = "$context.requestTime"
+      httpMethod     = "$context.httpMethod"
+      resourcePath   = "$context.resourcePath"
+      status         = "$context.status"
+    })
+  }
 }
+
 
 # Permisos Lambda para invocación desde API Gateway
 resource "aws_lambda_permission" "api_gateway_login" {

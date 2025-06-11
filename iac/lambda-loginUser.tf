@@ -17,6 +17,8 @@ resource "aws_lambda_function" "login_user" {
   
   # Hash del código fuente para detectar cambios
   source_code_hash = data.archive_file.lambda_login_user.output_base64sha256
+
+  reserved_concurrent_executions = var.lambda_reserved_concurrency
   
   # Configuración de red VPC para acceder a RDS
   vpc_config {
@@ -32,5 +34,8 @@ resource "aws_lambda_function" "login_user" {
       DB_USER = var.db_username                       # Usuario de la base de datos
       DB_PASS = var.db_password                       # Contraseña de la base de datos
     }
+  }
+    tracing_config {
+    mode = "Active"
   }
 }
