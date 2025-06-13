@@ -10,8 +10,8 @@ resource "aws_lambda_function" "create_event" {
   filename         = data.archive_file.lambda_create_event.output_path
   source_code_hash = data.archive_file.lambda_create_event.output_base64sha256
   handler          = "index.handler"
-  runtime          = "nodejs16.x"
-  role            = aws_iam_role.lambda_exec_role.arn
+  runtime          = "nodejs20.x"
+  role             = aws_iam_role.lambda_exec_role.arn
   
   vpc_config {
     subnet_ids         = [aws_subnet.public_a.id, aws_subnet.public_b.id]
@@ -28,5 +28,8 @@ resource "aws_lambda_function" "create_event" {
       DB_USER   = var.db_username
       DB_PASS   = var.db_password
     }
+
+    # Cifrado de las variables de entorno con la clave KMS
+    kms_key_arn = aws_kms_key.lambda_environment_kms.arn
   }
 }
