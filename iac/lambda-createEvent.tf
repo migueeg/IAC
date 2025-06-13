@@ -33,3 +33,8 @@ resource "aws_lambda_function" "create_event" {
     kms_key_arn = aws_kms_key.lambda_environment_kms.arn
   }
 }
+
+# Crear el Dead Letter Queue (DLQ)
+resource "aws_sqs_queue" "lambda_dlq" {
+  name = "lambda-dead-letter-queue"
+}
