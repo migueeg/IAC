@@ -18,6 +18,35 @@ resource "aws_internet_gateway" "main" {
   }
 }
 
+# Crear un grupo de seguridad restringido para la VPC
+resource "aws_security_group" "default_restricted_sg" {
+  name        = "restricted-sg"
+  description = "Security group to restrict all inbound and outbound traffic"
+  vpc_id      = aws_vpc.main_vpc.id
+
+  # Bloquear todo el tráfico entrante
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = []
+    description = "Block all inbound traffic"
+  }
+
+  # Bloquear todo el tráfico saliente
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = []
+    description = "Block all outbound traffic"
+  }
+
+  tags = {
+    Name = "restricted-sg"
+  }
+}
+
 # Public Subnets
 resource "aws_subnet" "public_a" {
   vpc_id                  = aws_vpc.main_vpc.id
