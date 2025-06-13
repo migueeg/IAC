@@ -33,6 +33,23 @@ resource "aws_s3_bucket_logging" "mi_bucket_logging" {
   depends_on = [aws_s3_bucket.mi_bucket_web]
 }
 
+resource "aws_s3_bucket_lifecycle_configuration" "mi_bucket_lifecycle" {
+  bucket = aws_s3_bucket.mi_bucket_web.id
+
+  rule {
+    id     = "log-expiration-rule"
+    status = "Enabled"
+
+    filter {
+      prefix = "logs/"
+    }
+
+    expiration {
+      days = 30
+    }
+  }
+}
+
 
 resource "aws_s3_bucket_policy" "bucket_oai_policy" {
   bucket = aws_s3_bucket.mi_bucket_web.id
