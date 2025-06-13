@@ -13,7 +13,7 @@ resource "aws_lambda_function" "login_user" {
   function_name    = "lambda-login-user"    
   role            = aws_iam_role.lambda_exec_role.arn  
   handler         = "index.handler"        
-  runtime         = "nodejs16.x"  
+  runtime         = "nodejs20.x"  
 
   dead_letter_config {
     target_arn = aws_sqs_queue.lambda_dlq_login.arn
