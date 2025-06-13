@@ -79,12 +79,6 @@ resource "aws_iam_role_policy_attachment" "lambda_kinesis_access" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonKinesisFullAccess"
 } 
 
-# Clave KMS para cifrado de variables de entorno en Lambda
-resource "aws_kms_key" "lambda_env_kms" {
-  description         = "KMS key for Lambda environment variables encryption"
-  enable_key_rotation = true
-}
-
 # KMS Key para cifrado de variables de entorno y DynamoDB
 resource "aws_kms_key" "lambda_env_kms" {
   description         = "KMS key para cifrado de variables de entorno y DynamoDB"
