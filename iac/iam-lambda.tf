@@ -84,3 +84,10 @@ resource "aws_kms_key" "lambda_env_kms" {
   description         = "KMS key for Lambda environment variables encryption"
   enable_key_rotation = true
 }
+
+# KMS Key para cifrado de variables de entorno y DynamoDB
+resource "aws_kms_key" "lambda_env_kms" {
+  description         = "KMS key para cifrado de variables de entorno y DynamoDB"
+  enable_key_rotation = true
+}
+ 
