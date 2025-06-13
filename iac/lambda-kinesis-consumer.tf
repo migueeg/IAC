@@ -9,6 +9,10 @@ resource "aws_lambda_function" "kinesis_consumer" {
 
   reserved_concurrent_executions = var.lambda_reserved_concurrency
 
+  vpc_config {
+    subnet_ids         = var.lambda_subnet_ids
+    security_group_ids = var.lambda_security_group_ids
+  }
 
   environment {
     variables = {
