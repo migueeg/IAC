@@ -33,6 +33,9 @@ resource "aws_lambda_function" "login_user" {
     security_group_ids = [aws_security_group.lambda_sg.id]  
   }
 
+# Clave KMS para cifrar variables de entorno
+  kms_key_arn = aws_kms_key.lambda_env_kms.arn
+
   # Variables de entorno para la conexión a la base de datos
   environment {
     variables = {
