@@ -65,3 +65,52 @@ resource "aws_route_table_association" "public_b" {
   subnet_id      = aws_subnet.public_b.id
   route_table_id = aws_route_table.public.id
 }
+
+# Configuración de VPC Flow Logs
+resource "aws_vpc_flow_log" "main_vpc_flow_log" {
+  vpc_id = aws_vpc.main_vpc.id  # ID de la VPC para la que habilitarás el flujo de logs
+
+  traffic_type = "ALL"  # Puedes elegir 'ACCEPT', 'REJECT' o 'ALL'
+  log_group_name = "/aws/vpc/flow-logs"  # Nombre del grupo de logs de CloudWatch
+  iam_role_arn = aws_iam_role.flow_logs_role.arn  # ARN del rol de IAM para acceder a CloudWatch Logs
+}
+
+# Rol de IAM para VPC Flow Logs
+resource "aws_iam_role" "flow_logs_role" {
+  name = "vpc-flow-logs-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "vpc-flow-logs.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+# Política para el rol de VPC Flow Logs
+resource "aws_iam_policy" "flow_logs_policy" {
+  name = "vpc-flow-logs-policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = "logs:*"
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+# Adjuntar la política al rol de VPC Flow Logs
+resource "aws_iam_role_policy_attachment" "flow_logs_policy_attachment" {
+  role       = aws_iam_role.flow_logs_role.name
+  policy_arn = aws_iam_policy.flow_logs_policy.arn
+}
