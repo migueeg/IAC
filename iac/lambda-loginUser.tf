@@ -14,6 +14,11 @@ resource "aws_lambda_function" "login_user" {
   role            = aws_iam_role.lambda_exec_role.arn  
   handler         = "index.handler"        
   runtime         = "nodejs16.x"  
+
+  dead_letter_config {
+    target_arn = aws_sqs_queue.lambda_dlq_login.arn
+  }
+  
   code_signing_config_arn = var.code_signing_config_arn
        
   
