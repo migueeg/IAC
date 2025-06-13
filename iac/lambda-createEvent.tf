@@ -41,6 +41,11 @@ resource "aws_lambda_function" "create_event" {
 
   # Validación de la firma del código
   code_signing_config_arn = aws_lambda_code_signing_config.create_event_code_signing.arn
+  
+  # Habilitar el trazado X-Ray
+  tracing_config {
+    mode = "Active"
+  }
 }
 
 # Configuración de la cola de eventos (SQS)
@@ -59,7 +64,7 @@ resource "aws_sqs_queue" "lambda_dlq_register_event" {
   name = "lambda-dlq-register-event"
 }
 
-# Configuración de la firma del código (si aún no la tienes configurada)
+# Configuración de la firma del código
 resource "aws_lambda_code_signing_config" "create_event_code_signing" {
   description = "Code signing config for create_event Lambda function"
 
