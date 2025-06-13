@@ -12,6 +12,11 @@ resource "aws_dynamodb_table" "tabla_eventos" {
     name = "id"
     type = "S"
   }
+
+    point_in_time_recovery {
+    enabled = true
+  }
+
 }
 
 resource "aws_lambda_function" "register_event" {
