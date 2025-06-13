@@ -22,6 +22,16 @@ resource "aws_s3_bucket" "mi_bucket_web" {
   }
 }
 
+# Habilitar el registro de acceso para el bucket S3
+resource "aws_s3_bucket_logging" "mi_bucket_logging" {
+  bucket = aws_s3_bucket.mi_bucket_web.id  # Utiliza el ID de tu bucket S3
+
+  # El destino donde se almacenarán los registros
+  target_bucket = "nombre-del-bucket-de-logs"  # Este es un bucket diferente para almacenar los logs
+  target_prefix = "logs/"  # Prefijo de los logs
+
+  depends_on = [aws_s3_bucket.mi_bucket_web]
+}
 
 
 resource "aws_s3_bucket_policy" "bucket_oai_policy" {
