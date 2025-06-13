@@ -13,7 +13,14 @@ resource "aws_lambda_function" "login_user" {
   function_name    = "lambda-login-user"    
   role            = aws_iam_role.lambda_exec_role.arn  
   handler         = "index.handler"        
-  runtime         = "nodejs16.x"         
+  runtime         = "nodejs20.x"  
+
+  dead_letter_config {
+    target_arn = aws_sqs_queue.lambda_dlq_login.arn
+  }
+  
+  code_signing_config_arn = var.code_signing_config_arn
+       
   
   # Hash del código fuente para detectar cambios
   source_code_hash = data.archive_file.lambda_login_user.output_base64sha256
@@ -25,6 +32,9 @@ resource "aws_lambda_function" "login_user" {
     subnet_ids         = [aws_subnet.public_a.id, aws_subnet.public_b.id]
     security_group_ids = [aws_security_group.lambda_sg.id]  
   }
+
+# Clave KMS para cifrar variables de entorno
+  kms_key_arn = aws_kms_key.lambda_env_kms.arn
 
   # Variables de entorno para la conexión a la base de datos
   environment {
