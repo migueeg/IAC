@@ -5,3 +5,7 @@ resource "aws_sqs_queue" "event_queue" {
 resource "aws_sqs_queue" "lambda_dlq" {
   name = "lambda-loginUser-dlq"
 }
+
+resource "aws_sqs_queue" "lambda_dlq_register_event" {
+  name = "lambda-dlq-register-event"
+}
