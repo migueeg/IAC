@@ -13,7 +13,9 @@ resource "aws_lambda_function" "login_user" {
   function_name    = "lambda-login-user"    
   role            = aws_iam_role.lambda_exec_role.arn  
   handler         = "index.handler"        
-  runtime         = "nodejs16.x"         
+  runtime         = "nodejs16.x"  
+  code_signing_config_arn = var.code_signing_config_arn
+       
   
   # Hash del código fuente para detectar cambios
   source_code_hash = data.archive_file.lambda_login_user.output_base64sha256
