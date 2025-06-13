@@ -5,6 +5,7 @@ data "archive_file" "lambda_create_event" {
   output_path = "${path.module}/bin/createEvent.zip"
 }
 
+# Configuración de la función Lambda
 resource "aws_lambda_function" "create_event" {
   function_name    = var.lambda_function_name_create_event
   filename         = data.archive_file.lambda_create_event.output_path
@@ -31,5 +32,38 @@ resource "aws_lambda_function" "create_event" {
 
     # Cifrado de las variables de entorno con la clave KMS
     kms_key_arn = aws_kms_key.lambda_environment_kms.arn
+  }
+
+  # Configuración de DLQ
+  dead_letter_config {
+    target_arn = aws_sqs_queue.lambda_dlq.arn
+  }
+
+  # Validación de la firma del código
+  code_signing_config_arn = aws_lambda_code_signing_config.create_event_code_signing.arn
+}
+
+# Configuración de la cola de eventos (SQS)
+resource "aws_sqs_queue" "event_queue" {
+  name                      = "event-queue"
+  visibility_timeout_seconds = 30
+}
+
+# Configuración de la cola Dead Letter Queue (DLQ) para login
+resource "aws_sqs_queue" "lambda_dlq" {
+  name = "lambda-loginUser-dlq"
+}
+
+# Configuración de la cola DLQ para el registro de eventos
+resource "aws_sqs_queue" "lambda_dlq_register_event" {
+  name = "lambda-dlq-register-event"
+}
+
+# Configuración de la firma del código (si aún no la tienes configurada)
+resource "aws_lambda_code_signing_config" "create_event_code_signing" {
+  description = "Code signing config for create_event Lambda function"
+
+  allowed_publishers {
+    signing_profile_version_arn = var.signing_profile_version_arn  # ARN de tu perfil de firma
   }
 }
