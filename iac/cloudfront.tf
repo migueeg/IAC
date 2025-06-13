@@ -47,6 +47,8 @@ resource "aws_cloudfront_distribution" "cdn" {
     minimum_protocol_version = "TLSv1.2_2021"
   }
 
+  web_acl_id = aws_wafv2_web_acl.cloudfront_waf.arn
+
   tags = {
     Name = "CloudFrontForS3Website"
   }
