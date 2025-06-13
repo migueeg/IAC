@@ -85,3 +85,8 @@ resource "aws_kms_key" "lambda_env_kms" {
   enable_key_rotation = true
 }
  
+# Permitir que S3 invoque la función Lambda
+resource "aws_iam_role_policy_attachment" "lambda_s3_access" {
+  role       = aws_iam_role.lambda_exec_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSLambdaS3ExecutionRole"
+}

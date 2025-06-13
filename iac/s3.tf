@@ -51,3 +51,23 @@ resource "aws_s3_bucket_public_access_block" "no_block" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
+
+# Configuración de Notificaciones de Evento S3
+resource "aws_s3_bucket_notification" "mi_bucket_eventos" {
+  bucket = aws_s3_bucket.mi_bucket_web.id  # Reemplaza con el nombre correcto de tu bucket
+
+  event {
+    event     = "s3:ObjectCreated:*"  # Evento de creación de objeto
+    lambda_function_arn = aws_lambda_function.mi_lambda_function.arn  # ARN de la función Lambda
+  }
+
+  event {
+    event     = "s3:ObjectRemoved:*"  # Evento de eliminación de objeto
+    lambda_function_arn = aws_lambda_function.mi_lambda_function.arn  # ARN de la función Lambda
+  }
+
+  depends_on = [
+    aws_s3_bucket.mi_bucket_web,  # Asegura que el bucket ya esté creado
+    aws_lambda_permission.s3_lambda_permission  # Asegura que el permiso esté asignado a Lambda
+  ]
+}
