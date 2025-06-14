@@ -78,13 +78,13 @@ resource "aws_security_group" "lambda_sg" {
   description = "Security group for Lambda functions"
   vpc_id      = aws_vpc.main_vpc.id
 
-  # Permitir todo el tráfico saliente
+  # Permitir solo salida hacia RDS (puerto 5432)
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow all outbound traffic"
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [aws_security_group.rds_sg.id]
+    description     = "Allow outbound PostgreSQL traffic to RDS"
   }
 
   tags = {
