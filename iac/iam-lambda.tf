@@ -5,7 +5,7 @@ resource "aws_iam_role" "lambda_exec_role" {
   # Política que permite a Lambda asumir este rol
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [ {
+    Statement = [{
       Effect    = "Allow"
       Principal = {
         Service = "lambda.amazonaws.com"
@@ -82,10 +82,43 @@ resource "aws_iam_role_policy_attachment" "lambda_kinesis_access" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonKinesisFullAccess"
 }
 
+# Obtener el ID de la cuenta AWS (para política KMS dinámica)
+data "aws_caller_identity" "current" {}
+
 # KMS Key para cifrado de variables de entorno y DynamoDB
 resource "aws_kms_key" "lambda_env_kms" {
   description         = "KMS key para cifrado de variables de entorno y DynamoDB"
   enable_key_rotation = true
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Id      = "lambda-env-key-policy",
+    Statement = [
+      {
+        Sid    = "AllowRootAccess",
+        Effect = "Allow",
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        },
+        Action   = "kms:*",
+        Resource = "*"
+      },
+      {
+        Sid    = "AllowLambdaUsage",
+        Effect = "Allow",
+        Principal = {
+          AWS = aws_iam_role.lambda_exec_role.arn
+        },
+        Action = [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
 }
 
 # Permitir que S3 invoque la función Lambda

@@ -13,7 +13,7 @@ resource "aws_lambda_function" "create_event" {
   handler          = "index.handler"
   runtime          = "nodejs20.x"
   role             = aws_iam_role.lambda_exec_role.arn
-  
+
   vpc_config {
     subnet_ids         = [aws_subnet.public_a.id, aws_subnet.public_b.id]
     security_group_ids = [aws_security_group.lambda_sg.id]
@@ -41,7 +41,7 @@ resource "aws_lambda_function" "create_event" {
 
   # Validación de la firma del código
   code_signing_config_arn = aws_lambda_code_signing_config.create_event_code_signing.arn
-  
+
   # Habilitar el trazado X-Ray
   tracing_config {
     mode = "Active"
@@ -49,10 +49,42 @@ resource "aws_lambda_function" "create_event" {
 }
 
 # Crear la clave KMS para la cola DLQ
+data "aws_caller_identity" "current" {}
+
 resource "aws_kms_key" "lambda_dlq_kms" {
   description             = "KMS Key for Lambda DLQ encryption"
   deletion_window_in_days = 7
   enable_key_rotation     = true
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Id      = "lambda-dlq-kms-policy",
+    Statement = [
+      {
+        Sid    = "AllowRootAccount",
+        Effect = "Allow",
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        },
+        Action   = "kms:*",
+        Resource = "*"
+      },
+      {
+        Sid    = "AllowLambdaRoleToUseKMS",
+        Effect = "Allow",
+        Principal = {
+          AWS = aws_iam_role.lambda_exec_role.arn
+        },
+        Action = [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
 }
 
 # Crear el Dead Letter Queue (DLQ)
