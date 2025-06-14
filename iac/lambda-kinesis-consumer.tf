@@ -6,7 +6,6 @@ resource "aws_lambda_function" "kinesis_consumer" {
   runtime          = "nodejs20.x"
   role             = aws_iam_role.lambda_exec_role.arn
 
-
   reserved_concurrent_executions = var.lambda_reserved_concurrency
 
   vpc_config {
@@ -18,6 +17,16 @@ resource "aws_lambda_function" "kinesis_consumer" {
     variables = {
       STAGE = "dev"
     }
+  }
+
+  # Configuración de DLQ (Dead Letter Queue)
+  dead_letter_config {
+    target_arn = aws_sqs_queue.lambda_dlq.arn  # Referencia a tu cola DLQ
+  }
+
+  # Habilitar el trazado X-Ray
+  tracing_config {
+    mode = "Active"
   }
 }
 

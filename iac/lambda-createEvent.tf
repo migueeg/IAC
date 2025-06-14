@@ -34,7 +34,7 @@ resource "aws_lambda_function" "create_event" {
     kms_key_arn = aws_kms_key.lambda_environment_kms.arn
   }
 
-  # Configuración de DLQ
+  # Configuración de DLQ (Dead Letter Queue)
   dead_letter_config {
     target_arn = aws_sqs_queue.lambda_dlq.arn
   }
@@ -45,30 +45,5 @@ resource "aws_lambda_function" "create_event" {
   # Habilitar el trazado X-Ray
   tracing_config {
     mode = "Active"
-  }
-}
-
-# Configuración de la cola de eventos (SQS)
-resource "aws_sqs_queue" "event_queue" {
-  name                      = "event-queue"
-  visibility_timeout_seconds = 30
-}
-
-# Configuración de la cola Dead Letter Queue (DLQ) para login
-resource "aws_sqs_queue" "lambda_dlq" {
-  name = "lambda-loginUser-dlq"
-}
-
-# Configuración de la cola DLQ para el registro de eventos
-resource "aws_sqs_queue" "lambda_dlq_register_event" {
-  name = "lambda-dlq-register-event"
-}
-
-# Configuración de la firma del código
-resource "aws_lambda_code_signing_config" "create_event_code_signing" {
-  description = "Code signing config for create_event Lambda function"
-
-  allowed_publishers {
-    signing_profile_version_arn = var.signing_profile_version_arn  # ARN de tu perfil de firma
   }
 }
