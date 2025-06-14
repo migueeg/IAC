@@ -35,6 +35,10 @@ resource "aws_db_instance" "postgres_db" {
   # ✅ Habilitar autenticación IAM
   iam_database_authentication_enabled = true
 
+  # ✅ Habilitar Enhanced Monitoring (Checkov: CKV_AWS_118)
+  monitoring_interval          = 60
+  monitoring_role_arn          = aws_iam_role.rds_monitoring.arn
+
   tags = {
     Environment = var.environment
   }
