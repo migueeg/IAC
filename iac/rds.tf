@@ -1,27 +1,28 @@
 # Instancia de PostgreSQL
 resource "aws_db_instance" "postgres_db" {
-  identifier           = "eventos-db"
-  engine              = "postgres"
-  engine_version      = "14"
-  instance_class      = "db.t3.micro"
-  allocated_storage   = 20
-  publicly_accessible    = true
+  identifier                   = "eventos-db"
+  engine                       = "postgres"
+  engine_version               = "14"
+  auto_minor_version_upgrade   = true  # Asegura actualizaciones menores automáticas
+  instance_class               = "db.t3.micro"
+  allocated_storage            = 20
+  publicly_accessible          = true
 
-  db_name             = "eventosdb"
-  username            = var.db_username
-  password            = var.db_password
+  db_name                      = "eventosdb"
+  username                     = var.db_username
+  password                     = var.db_password
   
   # Configuración de VPC
-  db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
-  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  db_subnet_group_name         = aws_db_subnet_group.rds_subnet_group.name
+  vpc_security_group_ids       = [aws_security_group.rds_sg.id]
   
-  skip_final_snapshot = true
+  skip_final_snapshot          = true
   
   # Configuración de logs
   enabled_cloudwatch_logs_exports = ["postgresql", "error", "slowquery"]
 
   # Copiar etiquetas a los snapshots
-  copy_tags_to_snapshot = true
+  copy_tags_to_snapshot        = true
 
   tags = {
     Environment = var.environment
