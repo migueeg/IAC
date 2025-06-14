@@ -60,3 +60,26 @@ resource "aws_kms_key" "frontend_kms" {
     ]
   })
 }
+
+# Configuración de clave KMS personalizada para la cola SQS (event_queue)
+resource "aws_kms_key" "sqs_event_kms" {
+  description             = "CMK para cifrado de la SQS event_queue"
+  enable_key_rotation     = true
+  deletion_window_in_days = 7
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Id      = "sqs-kms-policy",
+    Statement = [
+      {
+        Sid    = "AllowRootAccountSQS",
+        Effect = "Allow",
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        },
+        Action   = "kms:*",
+        Resource = "*"
+      }
+    ]
+  })
+}
