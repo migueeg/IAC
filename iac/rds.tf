@@ -11,13 +11,17 @@ resource "aws_db_instance" "postgres_db" {
   db_name                      = "eventosdb"
   username                     = var.db_username
   password                     = var.db_password
-  
+
   # Configuración de VPC
   db_subnet_group_name         = aws_db_subnet_group.rds_subnet_group.name
   vpc_security_group_ids       = [aws_security_group.rds_sg.id]
-  
+
+  # Activar cifrado en reposo
+  storage_encrypted            = true
+  kms_key_id                   = aws_kms_key.rds_kms.arn
+
   skip_final_snapshot          = true
-  
+
   # Configuración de logs
   enabled_cloudwatch_logs_exports = ["postgresql", "error", "slowquery"]
 
@@ -91,4 +95,29 @@ resource "aws_security_group" "lambda_sg" {
     Name        = "lambda-security-group"
     Environment = var.environment
   }
+}
+
+# Clave KMS para cifrado en reposo de RDS
+data "aws_caller_identity" "current" {}
+
+resource "aws_kms_key" "rds_kms" {
+  description             = "KMS key for RDS encryption at rest"
+  enable_key_rotation     = true
+  deletion_window_in_days = 10
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Id      = "rds-kms-policy",
+    Statement = [
+      {
+        Sid    = "AllowRootAccount",
+        Effect = "Allow",
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        },
+        Action   = "kms:*",
+        Resource = "*"
+      }
+    ]
+  })
 }
