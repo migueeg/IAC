@@ -1,11 +1,10 @@
 resource "aws_lambda_function" "sqs_ses_consumer" {
-  function_name = "lambda-sqs-ses-consumer"
-  filename      = "${path.module}/bin/sqsSesConsumer.zip"
-  source_code_hash = filebase64sha256("${path.module}/bin/sqsSesConsumer.zip")
-  handler       = "index.handler"
-  runtime       = "nodejs16.x"
-  role          = aws_iam_role.lambda_exec_role.arn
-
+  function_name         = "lambda-sqs-ses-consumer"
+  filename              = "${path.module}/bin/sqsSesConsumer.zip"
+  source_code_hash      = filebase64sha256("${path.module}/bin/sqsSesConsumer.zip")
+  handler               = "index.handler"
+  runtime               = "nodejs20.x"  # Runtime actualizado
+  role                  = aws_iam_role.lambda_exec_role.arn
   reserved_concurrent_executions = var.lambda_reserved_concurrency
 
   environment {
@@ -15,7 +14,7 @@ resource "aws_lambda_function" "sqs_ses_consumer" {
     }
   }
 
-    tracing_config {
+  tracing_config {
     mode = "PassThrough"
   }
 }
