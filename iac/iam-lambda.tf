@@ -2,7 +2,6 @@
 resource "aws_iam_role" "lambda_exec_role" {
   name = "lambda_exec_role"
 
-  # Política que permite a Lambda asumir este rol
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -40,7 +39,12 @@ resource "aws_iam_policy" "lambda_policy" {
           "ec2:DescribeNetworkInterfaces",
           "ec2:DeleteNetworkInterface"
         ]
-        Resource = "*"
+        Resource = "*",
+        Condition = {
+          StringEquals = {
+            "ec2:Vpc" = aws_vpc.main_vpc.arn
+          }
+        }
       },
       # Permiso para conectar con RDS
       {
