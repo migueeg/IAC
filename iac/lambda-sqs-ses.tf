@@ -1,6 +1,36 @@
-# DLQ para la función Lambda
+# Clave KMS para cifrado de la cola SQS (DLQ)
+resource "aws_kms_key" "sqs_kms_key" {
+  description = "KMS key for SQS DLQ encryption"
+  enable_key_rotation = true
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid: "AllowSQSUsage",
+        Effect = "Allow",
+        Principal = {
+          Service = "sqs.amazonaws.com"
+        },
+        Action = [
+          "kms:GenerateDataKey*",
+          "kms:Decrypt"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_kms_alias" "sqs_kms_alias" {
+  name          = "alias/sqs-dlq-kms"
+  target_key_id = aws_kms_key.sqs_kms_key.key_id
+}
+
+# DLQ para la función Lambda (con cifrado)
 resource "aws_sqs_queue" "lambda_dlq" {
-  name = "lambda-dlq"
+  name               = "lambda-dlq"
+  kms_master_key_id  = aws_kms_key.sqs_kms_key.arn
 }
 
 # Política que permite a Lambda enviar mensajes a la DLQ
@@ -29,7 +59,7 @@ resource "aws_lambda_function" "sqs_ses_consumer" {
   filename              = "${path.module}/bin/sqsSesConsumer.zip"
   source_code_hash      = filebase64sha256("${path.module}/bin/sqsSesConsumer.zip")
   handler               = "index.handler"
-  runtime               = "nodejs20.x"  # Runtime actualizado
+  runtime               = "nodejs20.x"
   role                  = aws_iam_role.lambda_exec_role.arn
   reserved_concurrent_executions = var.lambda_reserved_concurrency
 
@@ -44,7 +74,7 @@ resource "aws_lambda_function" "sqs_ses_consumer" {
     mode = "PassThrough"
   }
 
-  # Configuración de DLQ
+  # DLQ configurado correctamente
   dead_letter_config {
     target_arn = aws_sqs_queue.lambda_dlq.arn
   }
