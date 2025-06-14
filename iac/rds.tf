@@ -22,6 +22,9 @@ resource "aws_db_instance" "postgres_db" {
 
   skip_final_snapshot          = true
 
+  # Protección contra eliminación habilitada
+  deletion_protection          = true
+
   # Configuración de logs
   enabled_cloudwatch_logs_exports = ["postgresql", "error", "slowquery"]
 
