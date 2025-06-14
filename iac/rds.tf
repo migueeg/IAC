@@ -6,6 +6,7 @@ resource "aws_db_instance" "postgres_db" {
   auto_minor_version_upgrade   = true  # Asegura actualizaciones menores automáticas
   instance_class               = "db.t3.micro"
   allocated_storage            = 20
+  multi_az                     = true  # ✅ Habilita Multi-AZ
   publicly_accessible          = false  # Evita exposición pública
 
   db_name                      = "eventosdb"
@@ -30,6 +31,9 @@ resource "aws_db_instance" "postgres_db" {
 
   # Copiar etiquetas a los snapshots
   copy_tags_to_snapshot        = true
+
+  # ✅ Habilitar autenticación IAM
+  iam_database_authentication_enabled = true
 
   tags = {
     Environment = var.environment
