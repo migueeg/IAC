@@ -3,9 +3,21 @@ resource "aws_api_gateway_rest_api" "main" {
   name        = "eventos-api"
   description = "API para eventos"
 
-    lifecycle {
+  lifecycle {
     create_before_destroy = true
   }
+}
+
+# Crear un validador de solicitud
+resource "aws_api_gateway_request_validator" "main" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  name        = "validate_body"
+  
+  # Validar cuerpo de la solicitud
+  validate_request_body = true
+
+  # Validar los parámetros de la solicitud (opcional)
+  validate_request_parameters = false
 }
 
 # Recursos
@@ -32,21 +44,30 @@ resource "aws_api_gateway_method" "login_post" {
   rest_api_id   = aws_api_gateway_rest_api.main.id
   resource_id   = aws_api_gateway_resource.login.id
   http_method   = "POST"
-  authorization = "NONE"
+  authorization = "AWS_IAM"  # Usamos AWS_IAM o "API_KEY"
+  
+  # Asociar el validador de solicitudes
+  request_validator_id = aws_api_gateway_request_validator.main.id
 }
 
 resource "aws_api_gateway_method" "eventos_post" {
   rest_api_id   = aws_api_gateway_rest_api.main.id
   resource_id   = aws_api_gateway_resource.eventos.id
   http_method   = "POST"
-  authorization = "NONE"
+  authorization = "AWS_IAM"  # Usamos AWS_IAM o "API_KEY"
+
+  # Asociar el validador de solicitudes
+  request_validator_id = aws_api_gateway_request_validator.main.id
 }
 
 resource "aws_api_gateway_method" "post_register_event" {
   rest_api_id   = aws_api_gateway_rest_api.main.id
   resource_id   = aws_api_gateway_resource.register_event.id
   http_method   = "POST"
-  authorization = "NONE"
+  authorization = "AWS_IAM"  # Usamos AWS_IAM o "API_KEY"
+  
+  # Asociar el validador de solicitudes
+  request_validator_id = aws_api_gateway_request_validator.main.id
 }
 
 # Integraciones Lambda
@@ -86,7 +107,8 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     aws_api_gateway_integration.eventos_integration,
     aws_api_gateway_integration.register_event
   ]
-    lifecycle {
+  
+  lifecycle {
     create_before_destroy = true
   }
 }
@@ -122,7 +144,6 @@ resource "aws_api_gateway_stage" "api_stage" {
   }
 }
 
-
 # Permisos Lambda para invocación desde API Gateway
 resource "aws_lambda_permission" "api_gateway_login" {
   statement_id  = "AllowAPIGatewayInvokeLogin"
@@ -147,4 +168,3 @@ resource "aws_lambda_permission" "api_gateway_register_event" {
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.main.execution_arn}/*/POST/register"
 }
-

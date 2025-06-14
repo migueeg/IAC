@@ -5,8 +5,8 @@ resource "aws_iam_role" "lambda_exec_role" {
   # Política que permite a Lambda asumir este rol
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
+    Statement = [ {
+      Effect    = "Allow"
       Principal = {
         Service = "lambda.amazonaws.com"
       }
@@ -22,27 +22,30 @@ resource "aws_iam_policy" "lambda_policy" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
+      # Permisos para CloudWatch Logs
       {
-        Effect = "Allow"
-        Action = [
+        Effect   = "Allow"
+        Action   = [
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ]
         Resource = "arn:aws:logs:*:*:*"
       },
+      # Permisos para EC2 Network Interfaces (para Lambda VPC)
       {
-        Effect = "Allow"
-        Action = [
+        Effect   = "Allow"
+        Action   = [
           "ec2:CreateNetworkInterface",
           "ec2:DescribeNetworkInterfaces",
           "ec2:DeleteNetworkInterface"
         ]
         Resource = "*"
       },
+      # Permiso para conectar con RDS
       {
-        Effect = "Allow"
-        Action = ["rds-db:connect"]
+        Effect   = "Allow"
+        Action   = ["rds-db:connect"]
         Resource = aws_db_instance.postgres_db.arn
       }
     ]
@@ -77,11 +80,16 @@ resource "aws_iam_role_policy_attachment" "lambda_ses_access" {
 resource "aws_iam_role_policy_attachment" "lambda_kinesis_access" {
   role       = aws_iam_role.lambda_exec_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonKinesisFullAccess"
-} 
+}
 
 # KMS Key para cifrado de variables de entorno y DynamoDB
 resource "aws_kms_key" "lambda_env_kms" {
   description         = "KMS key para cifrado de variables de entorno y DynamoDB"
   enable_key_rotation = true
 }
- 
+
+# Permitir que S3 invoque la función Lambda
+resource "aws_iam_role_policy_attachment" "lambda_s3_access" {
+  role       = aws_iam_role.lambda_exec_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSLambdaS3ExecutionRole"
+}

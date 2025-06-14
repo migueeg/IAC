@@ -17,6 +17,12 @@ resource "aws_db_instance" "postgres_db" {
   
   skip_final_snapshot = true
   
+  # Configuración de logs
+  enabled_cloudwatch_logs_exports = ["postgresql"]
+
+  # Copiar etiquetas a los snapshots
+  copy_tags_to_snapshot = true
+
   tags = {
     Environment = var.environment
   }
