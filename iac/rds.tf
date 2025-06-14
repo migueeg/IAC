@@ -6,7 +6,7 @@ resource "aws_db_instance" "postgres_db" {
   auto_minor_version_upgrade   = true  # Asegura actualizaciones menores automáticas
   instance_class               = "db.t3.micro"
   allocated_storage            = 20
-  publicly_accessible          = true
+  publicly_accessible          = false  # Evita exposición pública
 
   db_name                      = "eventosdb"
   username                     = var.db_username
