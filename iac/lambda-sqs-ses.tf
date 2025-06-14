@@ -1,3 +1,29 @@
+# DLQ para la función Lambda
+resource "aws_sqs_queue" "lambda_dlq" {
+  name = "lambda-dlq"
+}
+
+# Política que permite a Lambda enviar mensajes a la DLQ
+resource "aws_sqs_queue_policy" "lambda_dlq_policy" {
+  queue_url = aws_sqs_queue.lambda_dlq.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid       = "AllowLambdaDLQ",
+        Effect    = "Allow",
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        },
+        Action    = "sqs:SendMessage",
+        Resource  = aws_sqs_queue.lambda_dlq.arn
+      }
+    ]
+  })
+}
+
+# Función Lambda configurada con DLQ
 resource "aws_lambda_function" "sqs_ses_consumer" {
   function_name         = "lambda-sqs-ses-consumer"
   filename              = "${path.module}/bin/sqsSesConsumer.zip"
@@ -17,8 +43,19 @@ resource "aws_lambda_function" "sqs_ses_consumer" {
   tracing_config {
     mode = "PassThrough"
   }
+
+  # Configuración de DLQ
+  dead_letter_config {
+    target_arn = aws_sqs_queue.lambda_dlq.arn
+  }
+
+  depends_on = [
+    aws_sqs_queue.lambda_dlq,
+    aws_sqs_queue_policy.lambda_dlq_policy
+  ]
 }
 
+# Asociación de la cola de eventos con la función Lambda
 resource "aws_lambda_event_source_mapping" "sqs_to_lambda" {
   event_source_arn = aws_sqs_queue.event_queue.arn
   function_name    = aws_lambda_function.sqs_ses_consumer.arn
