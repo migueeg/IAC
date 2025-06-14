@@ -94,6 +94,8 @@ resource "aws_iam_role" "flow_logs_role" {
 }
 
 # Política para el rol de VPC Flow Logs
+data "aws_caller_identity" "current" {}
+
 resource "aws_iam_policy" "flow_logs_policy" {
   name = "vpc-flow-logs-policy"
 
@@ -101,13 +103,21 @@ resource "aws_iam_policy" "flow_logs_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect   = "Allow"
-        Action   = "logs:*"
-        Resource = "*"
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogStreams"
+        ]
+        Resource = [
+          "arn:aws:logs:us-west-2:${data.aws_caller_identity.current.account_id}:log-group:/aws/vpc/flow-logs:*"
+        ]
       }
     ]
   })
 }
+
 
 # Adjuntar la política al rol de VPC Flow Logs
 resource "aws_iam_role_policy_attachment" "flow_logs_policy_attachment" {
