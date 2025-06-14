@@ -48,7 +48,15 @@ resource "aws_lambda_function" "create_event" {
   }
 }
 
+# Crear la clave KMS para la cola DLQ
+resource "aws_kms_key" "lambda_dlq_kms" {
+  description             = "KMS Key for Lambda DLQ encryption"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+}
+
 # Crear el Dead Letter Queue (DLQ)
 resource "aws_sqs_queue" "lambda_dlq" {
-  name = "lambda-dead-letter-queue"
+  name              = "lambda-dead-letter-queue"
+  kms_master_key_id = aws_kms_key.lambda_dlq_kms.arn
 }
