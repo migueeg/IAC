@@ -7,6 +7,32 @@ resource "aws_vpc" "main_vpc" {
   tags = {
     Name = "main-vpc"
   }
+  
+  # Asociar el grupo de seguridad predeterminado
+  default_security_group_id = aws_security_group.main_sg.id
+}
+
+# Grupo de seguridad para la VPC que restringe todo el tráfico
+resource "aws_security_group" "main_sg" {
+  name        = "main-sg"
+  description = "Security group that restricts all traffic by default"
+  vpc_id      = aws_vpc.main_vpc.id
+
+  # Restringir tráfico entrante (ingress) por defecto
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = []
+  }
+
+  # Restringir tráfico saliente (egress) por defecto
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = []
+  }
 }
 
 # Internet Gateway
