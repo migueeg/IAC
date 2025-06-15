@@ -1,50 +1,71 @@
+# Clave KMS para Performance Insights
+resource "aws_kms_key" "rds_pi_kms" {
+  description             = "KMS key for RDS Performance Insights"
+  enable_key_rotation     = true
+  deletion_window_in_days = 10
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid: "AllowRootAccess",
+        Effect: "Allow",
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        },
+        Action: "kms:*",
+        Resource: "*"
+      }
+    ]
+  })
+}
+
+resource "aws_kms_alias" "rds_pi_kms_alias" {
+  name          = "alias/rds-performance-insights"
+  target_key_id = aws_kms_key.rds_pi_kms.key_id
+}
+
 # Instancia de PostgreSQL
 resource "aws_db_instance" "postgres_db" {
   identifier                   = "eventos-db"
   engine                       = "postgres"
   engine_version               = "14"
-  auto_minor_version_upgrade   = true  # Asegura actualizaciones menores automáticas
+  auto_minor_version_upgrade   = true
   instance_class               = "db.t3.micro"
   allocated_storage            = 20
-  multi_az                     = true  # ✅ Habilita Multi-AZ
-  publicly_accessible          = false  # Evita exposición pública
+  multi_az                     = true
+  publicly_accessible          = false
 
   db_name                      = "eventosdb"
   username                     = var.db_username
   password                     = var.db_password
 
-  # Configuración de VPC
   db_subnet_group_name         = aws_db_subnet_group.rds_subnet_group.name
   vpc_security_group_ids       = [aws_security_group.rds_sg.id]
 
-  # Activar cifrado en reposo
   storage_encrypted            = true
   kms_key_id                   = aws_kms_key.rds_kms.arn
 
   skip_final_snapshot          = true
-
-  # Protección contra eliminación habilitada
   deletion_protection          = true
 
-  # Configuración de logs
   enabled_cloudwatch_logs_exports = ["postgresql", "error", "slowquery"]
-
-  # Copiar etiquetas a los snapshots
-  copy_tags_to_snapshot        = true
-
-  # ✅ Habilitar autenticación IAM
+  copy_tags_to_snapshot            = true
   iam_database_authentication_enabled = true
 
-  # ✅ Habilitar Enhanced Monitoring (Checkov: CKV_AWS_118)
   monitoring_interval          = 60
   monitoring_role_arn          = aws_iam_role.rds_monitoring.arn
+
+  performance_insights_enabled            = true
+  performance_insights_retention_period   = 7
+  performance_insights_kms_key_id         = aws_kms_key.rds_pi_kms.arn
 
   tags = {
     Environment = var.environment
   }
 }
 
-# Grupo de subredes para RDS
+# Subnet Group
 resource "aws_db_subnet_group" "rds_subnet_group" {
   name       = "rds-subnet-group"
   subnet_ids = [aws_subnet.public_a.id, aws_subnet.public_b.id]
@@ -54,13 +75,12 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
   }
 }
 
-# Security Group para RDS
+# Security Group RDS
 resource "aws_security_group" "rds_sg" {
   name        = "rds-security-group"
   description = "Security group for RDS PostgreSQL"
   vpc_id      = aws_vpc.main_vpc.id
 
-  # Regla para acceso a PostgreSQL
   ingress {
     from_port   = 5432
     to_port     = 5432
@@ -69,7 +89,6 @@ resource "aws_security_group" "rds_sg" {
     description = "PostgreSQL access from anywhere (development only)"
   }
 
-  # Acceso desde Lambda
   ingress {
     from_port       = 5432
     to_port         = 5432
@@ -87,13 +106,12 @@ resource "aws_security_group" "rds_sg" {
   }
 }
 
-# Security Group para las funciones Lambda
+# Security Group Lambda
 resource "aws_security_group" "lambda_sg" {
   name        = "lambda-security-group"
   description = "Security group for Lambda functions"
   vpc_id      = aws_vpc.main_vpc.id
 
-  # Permitir solo salida hacia RDS (puerto 5432)
   egress {
     from_port       = 5432
     to_port         = 5432
@@ -108,7 +126,7 @@ resource "aws_security_group" "lambda_sg" {
   }
 }
 
-# Clave KMS para cifrado en reposo de RDS
+# KMS general para cifrado en reposo
 data "aws_caller_identity" "current" {}
 
 resource "aws_kms_key" "rds_kms" {
