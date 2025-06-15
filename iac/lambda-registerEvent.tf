@@ -13,10 +13,9 @@ resource "aws_dynamodb_table" "tabla_eventos" {
     type = "S"
   }
 
-    point_in_time_recovery {
+  point_in_time_recovery {
     enabled = true
   }
-
 }
 
 resource "aws_lambda_function" "register_event" {
@@ -29,16 +28,23 @@ resource "aws_lambda_function" "register_event" {
 
   reserved_concurrent_executions = var.lambda_reserved_concurrency
 
+  #Conexión a la VPC
+  vpc_config {
+    subnet_ids         = [aws_subnet.public_a.id, aws_subnet.public_b.id]
+    security_group_ids = [aws_security_group.lambda_sg.id]
+  }
+
   dead_letter_config {
-  target_arn = aws_sqs_queue.lambda_dlq_register_event.arn
-}
+    target_arn = aws_sqs_queue.lambda_dlq_register_event.arn
+  }
 
   environment {
     variables = {
       TABLE_NAME = "tabla_eventos"
     }
   }
+
   tracing_config {
-  mode = "PassThrough"
-}
+    mode = "PassThrough"
+  }
 }
