@@ -9,6 +9,23 @@ resource "aws_vpc" "main_vpc" {
   }
 }
 
+# ✅ RESTRINGIR DEFAULT SECURITY GROUP (CKV2_AWS_12)
+data "aws_security_group" "default_vpc_sg" {
+  name   = "default"
+  vpc_id = aws_vpc.main_vpc.id
+}
+
+resource "aws_default_security_group" "default_deny_all" {
+  vpc_id = aws_vpc.main_vpc.id
+
+  ingress = []  # No permite entrada
+  egress  = []  # No permite salida
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+}
+
 # Internet Gateway
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main_vpc.id
@@ -68,10 +85,10 @@ resource "aws_route_table_association" "public_b" {
 
 # Configuración de VPC Flow Logs
 resource "aws_flow_log" "main_vpc_flow_log" {
-  vpc_id           = aws_vpc.main_vpc.id  # ID de la VPC para la que habilitarás el flujo de logs
-  traffic_type     = "ALL"                # Puedes elegir 'ACCEPT', 'REJECT' o 'ALL'
-  log_group_name   = "/aws/vpc/flow-logs" # Nombre del grupo de logs de CloudWatch
-  iam_role_arn     = aws_iam_role.flow_logs_role.arn  # ARN del rol de IAM para acceder a CloudWatch Logs
+  vpc_id           = aws_vpc.main_vpc.id
+  traffic_type     = "ALL"
+  log_group_name   = "/aws/vpc/flow-logs"
+  iam_role_arn     = aws_iam_role.flow_logs_role.arn
 }
 
 # Rol de IAM para VPC Flow Logs
