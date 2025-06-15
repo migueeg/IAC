@@ -53,7 +53,7 @@ resource "aws_sqs_queue_policy" "lambda_dlq_policy" {
   })
 }
 
-# Función Lambda configurada con DLQ
+# ✅ Función Lambda configurada con VPC y DLQ
 resource "aws_lambda_function" "sqs_ses_consumer" {
   function_name         = "lambda-sqs-ses-consumer"
   filename              = "${path.module}/bin/sqsSesConsumer.zip"
@@ -74,9 +74,13 @@ resource "aws_lambda_function" "sqs_ses_consumer" {
     mode = "PassThrough"
   }
 
-  # DLQ configurado correctamente
   dead_letter_config {
     target_arn = aws_sqs_queue.lambda_dlq.arn
+  }
+
+  vpc_config {
+    subnet_ids         = [aws_subnet.public_a.id, aws_subnet.public_b.id]
+    security_group_ids = [aws_default_security_group.default_deny_all.id]
   }
 
   depends_on = [
