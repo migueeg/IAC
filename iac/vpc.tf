@@ -3,7 +3,7 @@ resource "aws_vpc" "main_vpc" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true  # Enable DNS hostnames
   enable_dns_support   = true  # Enable DNS support
-  
+
   tags = {
     Name = "main-vpc"
   }
@@ -23,7 +23,7 @@ resource "aws_subnet" "public_a" {
   vpc_id                  = aws_vpc.main_vpc.id
   cidr_block              = "10.0.1.0/24"
   availability_zone       = "us-east-2a"
-  map_public_ip_on_launch = False  # Auto-assign public IP
+  map_public_ip_on_launch = false  # Auto-assign public IP
 
   tags = {
     Name = "public-subnet-a"
@@ -34,7 +34,7 @@ resource "aws_subnet" "public_b" {
   vpc_id                  = aws_vpc.main_vpc.id
   cidr_block              = "10.0.2.0/24"
   availability_zone       = "us-east-2b"
-  map_public_ip_on_launch = False  # Auto-assign public IP
+  map_public_ip_on_launch = false  # Auto-assign public IP
 
   tags = {
     Name = "public-subnet-b"
@@ -67,12 +67,11 @@ resource "aws_route_table_association" "public_b" {
 }
 
 # Configuración de VPC Flow Logs
-resource "aws_vpc_flow_log" "main_vpc_flow_log" {
-  vpc_id = aws_vpc.main_vpc.id  # ID de la VPC para la que habilitarás el flujo de logs
-
-  traffic_type = "ALL"  # Puedes elegir 'ACCEPT', 'REJECT' o 'ALL'
-  log_group_name = "/aws/vpc/flow-logs"  # Nombre del grupo de logs de CloudWatch
-  iam_role_arn = aws_iam_role.flow_logs_role.arn  # ARN del rol de IAM para acceder a CloudWatch Logs
+resource "aws_flow_log" "main_vpc_flow_log" {
+  vpc_id           = aws_vpc.main_vpc.id  # ID de la VPC para la que habilitarás el flujo de logs
+  traffic_type     = "ALL"                # Puedes elegir 'ACCEPT', 'REJECT' o 'ALL'
+  log_group_name   = "/aws/vpc/flow-logs" # Nombre del grupo de logs de CloudWatch
+  iam_role_arn     = aws_iam_role.flow_logs_role.arn  # ARN del rol de IAM para acceder a CloudWatch Logs
 }
 
 # Rol de IAM para VPC Flow Logs
@@ -80,13 +79,13 @@ resource "aws_iam_role" "flow_logs_role" {
   name = "vpc-flow-logs-role"
 
   assume_role_policy = jsonencode({
-    Version = "2012-10-17"
+    Version = "2012-10-17",
     Statement = [
       {
-        Effect = "Allow"
+        Effect = "Allow",
         Principal = {
           Service = "vpc-flow-logs.amazonaws.com"
-        }
+        },
         Action = "sts:AssumeRole"
       }
     ]
@@ -100,24 +99,23 @@ resource "aws_iam_policy" "flow_logs_policy" {
   name = "vpc-flow-logs-policy"
 
   policy = jsonencode({
-    Version = "2012-10-17"
+    Version = "2012-10-17",
     Statement = [
       {
-        Effect = "Allow"
+        Effect = "Allow",
         Action = [
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
           "logs:PutLogEvents",
           "logs:DescribeLogStreams"
-        ]
+        ],
         Resource = [
-          "arn:aws:logs:us-west-2:${data.aws_caller_identity.current.account_id}:log-group:/aws/vpc/flow-logs:*"
+          "arn:aws:logs:us-east-2:${data.aws_caller_identity.current.account_id}:log-group:/aws/vpc/flow-logs:*"
         ]
       }
     ]
   })
 }
-
 
 # Adjuntar la política al rol de VPC Flow Logs
 resource "aws_iam_role_policy_attachment" "flow_logs_policy_attachment" {
