@@ -1,6 +1,12 @@
+provider "aws" {
+  alias  = "virginia"
+  region = "us-east-1"
+}
+
 resource "aws_wafv2_web_acl" "cloudfront_waf" {
+  provider    = aws.virginia
   name        = "cloudfront-web-acl"
-  description = "WAF para proteger la distribución de CloudFront"
+  description = "WAF para proteger la distribucion de CloudFront"
   scope       = "CLOUDFRONT"
 
   default_action {
@@ -16,6 +22,7 @@ resource "aws_wafv2_web_acl" "cloudfront_waf" {
   rule {
     name     = "block-bad-user-agents"
     priority = 1
+
     action {
       block {}
     }
@@ -23,13 +30,16 @@ resource "aws_wafv2_web_acl" "cloudfront_waf" {
     statement {
       byte_match_statement {
         search_string = "BadBot"
+
         field_to_match {
           single_header {
             name = "user-agent"
           }
         }
+
         positional_constraint = "CONTAINS"
-        text_transformations {
+
+        text_transformation {
           priority = 0
           type     = "NONE"
         }

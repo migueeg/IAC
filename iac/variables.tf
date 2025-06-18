@@ -37,9 +37,17 @@ variable "code_signing_config_arn" {
   type        = string
 }
 
-variable "lambda_reserved_concurrency" {
-  description = "Número de ejecuciones concurrentes reservadas para la función Lambda."
-  type        = number
-  default     = 5  # Este es un valor predeterminado, puedes ajustarlo según sea necesario
+variable "lambda_subnet_ids" {
+  type        = list(string)
+  description = "Lista de Subnet para lambda kinesis consumer"
 }
+variable "lambda_security_group_ids" {
+  type        = list(string)
+  description = "Lista de IDs de grupos de seguridad para funciones Lambda kinesis consumer"
+} 
+
+variable "acm_certificate_arn" {
+  description = "ARN del certificado SSL para cloudfront"
+  type        = string
+} 
 

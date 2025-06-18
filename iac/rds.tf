@@ -25,7 +25,6 @@ resource "aws_kms_alias" "rds_pi_kms_alias" {
   target_key_id = aws_kms_key.rds_pi_kms.key_id
 }
 
-# Instancia de PostgreSQL
 resource "aws_db_instance" "postgres_db" {
   identifier                   = "eventos-db"
   engine                       = "postgres"
@@ -47,9 +46,9 @@ resource "aws_db_instance" "postgres_db" {
   kms_key_id                   = aws_kms_key.rds_kms.arn
 
   skip_final_snapshot          = true
-  deletion_protection          = true
+  deletion_protection          = false
 
-  enabled_cloudwatch_logs_exports = ["postgresql", "error", "slowquery"]
+  enabled_cloudwatch_logs_exports = ["postgresql"]
   copy_tags_to_snapshot            = true
   iam_database_authentication_enabled = true
 
@@ -65,7 +64,6 @@ resource "aws_db_instance" "postgres_db" {
   }
 }
 
-# Subnet Group
 resource "aws_db_subnet_group" "rds_subnet_group" {
   name       = "rds-subnet-group"
   subnet_ids = [aws_subnet.public_a.id, aws_subnet.public_b.id]
@@ -75,7 +73,6 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
   }
 }
 
-# Security Group RDS
 resource "aws_security_group" "rds_sg" {
   name        = "rds-security-group"
   description = "Security group for RDS PostgreSQL"
@@ -89,14 +86,6 @@ resource "aws_security_group" "rds_sg" {
     description = "PostgreSQL access from anywhere (development only)"
   }
 
-  ingress {
-    from_port       = 5432
-    to_port         = 5432
-    protocol        = "tcp"
-    security_groups = [aws_security_group.lambda_sg.id]
-    description     = "Access from Lambda functions"
-  }
-
   egress {
     from_port   = 0
     to_port     = 0
@@ -104,21 +93,16 @@ resource "aws_security_group" "rds_sg" {
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow all outbound traffic"
   }
+
+  tags = {
+    Name = "rds-security-group"
+  }
 }
 
-# Security Group Lambda
 resource "aws_security_group" "lambda_sg" {
   name        = "lambda-security-group"
   description = "Security group for Lambda functions"
   vpc_id      = aws_vpc.main_vpc.id
-
-  egress {
-    from_port       = 5432
-    to_port         = 5432
-    protocol        = "tcp"
-    security_groups = [aws_security_group.rds_sg.id]
-    description     = "Allow outbound PostgreSQL traffic to RDS"
-  }
 
   tags = {
     Name        = "lambda-security-group"
@@ -126,8 +110,26 @@ resource "aws_security_group" "lambda_sg" {
   }
 }
 
-# KMS general para cifrado en reposo
-data "aws_caller_identity" "current" {}
+
+resource "aws_security_group_rule" "lambda_to_rds" {
+  type                     = "egress"
+  from_port                = 5432
+  to_port                  = 5432
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.lambda_sg.id
+  source_security_group_id = aws_security_group.rds_sg.id
+  description              = "Allow Lambda to access RDS"
+}
+
+resource "aws_security_group_rule" "rds_from_lambda" {
+  type                     = "ingress"
+  from_port                = 5432
+  to_port                  = 5432
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.rds_sg.id
+  source_security_group_id = aws_security_group.lambda_sg.id
+  description              = "Allow RDS to accept traffic from Lambda"
+}
 
 resource "aws_kms_key" "rds_kms" {
   description             = "KMS key for RDS encryption at rest"

@@ -39,12 +39,7 @@ resource "aws_iam_policy" "lambda_policy" {
           "ec2:DescribeNetworkInterfaces",
           "ec2:DeleteNetworkInterface"
         ]
-        Resource = "*",
-        Condition = {
-          StringEquals = {
-            "ec2:Vpc" = aws_vpc.main_vpc.arn
-          }
-        }
+        Resource = "*"
       },
       # Permiso para conectar con RDS
       {
@@ -128,5 +123,5 @@ resource "aws_kms_key" "lambda_env_kms" {
 # Permitir que S3 invoque la función Lambda
 resource "aws_iam_role_policy_attachment" "lambda_s3_access" {
   role       = aws_iam_role.lambda_exec_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AWSLambdaS3ExecutionRole"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
 }

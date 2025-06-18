@@ -1,6 +1,3 @@
-# Identidad de la cuenta actual para políticas KMS
-data "aws_caller_identity" "current" {}
-
 # Configuración de claves KMS para las variables de entorno de Lambda
 resource "aws_kms_key" "lambda_environment_kms" {
   description             = "KMS key for Lambda environment variables"

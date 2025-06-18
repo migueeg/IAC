@@ -6,7 +6,6 @@ resource "aws_lambda_function" "kinesis_consumer" {
   runtime          = "nodejs20.x"
   role             = aws_iam_role.lambda_exec_role.arn
 
-  reserved_concurrent_executions = var.lambda_reserved_concurrency
 
   vpc_config {
     subnet_ids         = var.lambda_subnet_ids
@@ -19,12 +18,10 @@ resource "aws_lambda_function" "kinesis_consumer" {
     }
   }
 
-  # Configuración de DLQ (Dead Letter Queue)
   dead_letter_config {
-    target_arn = aws_sqs_queue.lambda_dlq.arn  # Referencia a tu cola DLQ
+    target_arn = aws_sqs_queue.lambda_dlq_kinesis_consumer.arn
   }
 
-  # Habilitar el trazado X-Ray
   tracing_config {
     mode = "Active"
   }
@@ -36,4 +33,8 @@ resource "aws_lambda_event_source_mapping" "kinesis_lambda_trigger" {
   starting_position = "LATEST"
   batch_size        = 1
   enabled           = true
+}
+
+resource "aws_sqs_queue" "lambda_dlq_kinesis_consumer" {
+  name = "lambda-kinesis-consumer-dlq"
 }

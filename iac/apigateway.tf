@@ -117,19 +117,10 @@ resource "aws_api_gateway_stage" "api_stage" {
   deployment_id = aws_api_gateway_deployment.api_deployment.id
   rest_api_id   = aws_api_gateway_rest_api.main.id
   stage_name    = var.environment
+  xray_tracing_enabled   = true
+  cache_cluster_enabled  = true
+  cache_cluster_size     = "0.5"
 
-  xray_tracing_enabled = true
-  cache_cluster_enabled = true
-  cache_cluster_size    = "0.5"  
-
-  method_settings {
-    method_path            = "*/*"
-    caching_enabled        = true
-    cache_ttl_in_seconds   = 300
-    cache_data_encrypted   = true
-    logging_level          = "INFO"
-    metrics_enabled        = true
-  }
 
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.api_gw_access_logs.arn
@@ -141,6 +132,21 @@ resource "aws_api_gateway_stage" "api_stage" {
       resourcePath   = "$context.resourcePath"
       status         = "$context.status"
     })
+  }
+}
+
+resource "aws_api_gateway_method_settings" "all_methods_settings" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  stage_name  = aws_api_gateway_stage.api_stage.stage_name
+
+  method_path = "*/*"
+
+  settings {
+    caching_enabled      = true
+    cache_ttl_in_seconds = 300
+    cache_data_encrypted = true
+    logging_level        = "INFO"
+    metrics_enabled      = true
   }
 }
 
@@ -167,4 +173,32 @@ resource "aws_lambda_permission" "api_gateway_register_event" {
   function_name = aws_lambda_function.register_event.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.main.execution_arn}/*/POST/register"
+}
+
+# CloudWatch Logs para API Gateway
+resource "aws_cloudwatch_log_group" "api_gw_access_logs" {
+  name              = "/aws/api-gateway/access-logs"
+  retention_in_days = 7
+
+} 
+
+resource "aws_iam_role" "apigw_cloudwatch_role" {
+  name = "apigw-cloudwatch-logs-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = { Service = "apigateway.amazonaws.com" },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "apigw_cloudwatch_policy" {
+  role       = aws_iam_role.apigw_cloudwatch_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+}
+
+resource "aws_api_gateway_account" "account" {
+  cloudwatch_role_arn = aws_iam_role.apigw_cloudwatch_role.arn
 }

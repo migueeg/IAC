@@ -1,3 +1,4 @@
+
 # Archivo ZIP para la función Lambda
 data "archive_file" "lambda_create_event" {
   type        = "zip"
@@ -5,7 +6,6 @@ data "archive_file" "lambda_create_event" {
   output_path = "${path.module}/bin/createEvent.zip"
 }
 
-# Configuración de la función Lambda
 resource "aws_lambda_function" "create_event" {
   function_name    = var.lambda_function_name_create_event
   filename         = data.archive_file.lambda_create_event.output_path
@@ -19,7 +19,6 @@ resource "aws_lambda_function" "create_event" {
     security_group_ids = [aws_security_group.lambda_sg.id]
   }
 
-  reserved_concurrent_executions = var.lambda_reserved_concurrency
 
   environment {
     variables = {
@@ -30,26 +29,16 @@ resource "aws_lambda_function" "create_event" {
       DB_PASS   = var.db_password
     }
 
-    # Cifrado de las variables de entorno con la clave KMS
-    kms_key_arn = aws_kms_key.lambda_environment_kms.arn
   }
 
-  # Configuración de DLQ (Dead Letter Queue)
   dead_letter_config {
-    target_arn = aws_sqs_queue.lambda_dlq.arn
+    target_arn = aws_sqs_queue.lambda_dlq_create_event.arn
   }
 
-  # Validación de la firma del código
-  code_signing_config_arn = aws_lambda_code_signing_config.create_event_code_signing.arn
-
-  # Habilitar el trazado X-Ray
   tracing_config {
     mode = "Active"
   }
 }
-
-# Crear la clave KMS para la cola DLQ
-data "aws_caller_identity" "current" {}
 
 resource "aws_kms_key" "lambda_dlq_kms" {
   description             = "KMS Key for Lambda DLQ encryption"
@@ -87,8 +76,7 @@ resource "aws_kms_key" "lambda_dlq_kms" {
   })
 }
 
-# Crear el Dead Letter Queue (DLQ)
-resource "aws_sqs_queue" "lambda_dlq" {
-  name              = "lambda-dead-letter-queue"
+resource "aws_sqs_queue" "lambda_dlq_create_event" {
+  name              = "lambda-create-event-dlq"
   kms_master_key_id = aws_kms_key.lambda_dlq_kms.arn
 }

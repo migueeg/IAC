@@ -109,8 +109,6 @@ resource "aws_iam_role" "flow_logs_role" {
   })
 }
 
-# Política para el rol de VPC Flow Logs
-data "aws_caller_identity" "current" {}
 
 resource "aws_iam_policy" "flow_logs_policy" {
   name = "vpc-flow-logs-policy"

@@ -1,3 +1,4 @@
+
 # Clave KMS para cifrado de la cola SQS (DLQ)
 resource "aws_kms_key" "sqs_kms_key" {
   description = "KMS key for SQS DLQ encryption"
@@ -7,7 +8,16 @@ resource "aws_kms_key" "sqs_kms_key" {
     Version = "2012-10-17",
     Statement = [
       {
-        Sid: "AllowSQSUsage",
+        Sid = "AllowRootAccountFullAccess",
+        Effect = "Allow",
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        },
+        Action = "kms:*",
+        Resource = "*"
+      },
+      {
+        Sid = "AllowSQSUsage",
         Effect = "Allow",
         Principal = {
           Service = "sqs.amazonaws.com"
@@ -27,15 +37,13 @@ resource "aws_kms_alias" "sqs_kms_alias" {
   target_key_id = aws_kms_key.sqs_kms_key.key_id
 }
 
-# DLQ para la función Lambda (con cifrado)
-resource "aws_sqs_queue" "lambda_dlq" {
-  name               = "lambda-dlq"
+resource "aws_sqs_queue" "lambda_dlq_sqs_ses" {
+  name               = "lambda-sqs-ses-dlq"
   kms_master_key_id  = aws_kms_key.sqs_kms_key.arn
 }
 
-# Política que permite a Lambda enviar mensajes a la DLQ
 resource "aws_sqs_queue_policy" "lambda_dlq_policy" {
-  queue_url = aws_sqs_queue.lambda_dlq.id
+  queue_url = aws_sqs_queue.lambda_dlq_sqs_ses.id
 
   policy = jsonencode({
     Version = "2012-10-17",
@@ -47,13 +55,12 @@ resource "aws_sqs_queue_policy" "lambda_dlq_policy" {
           Service = "lambda.amazonaws.com"
         },
         Action    = "sqs:SendMessage",
-        Resource  = aws_sqs_queue.lambda_dlq.arn
+        Resource  = aws_sqs_queue.lambda_dlq_sqs_ses.arn
       }
     ]
   })
 }
 
-# ✅ Función Lambda configurada con VPC y DLQ
 resource "aws_lambda_function" "sqs_ses_consumer" {
   function_name         = "lambda-sqs-ses-consumer"
   filename              = "${path.module}/bin/sqsSesConsumer.zip"
@@ -61,7 +68,6 @@ resource "aws_lambda_function" "sqs_ses_consumer" {
   handler               = "index.handler"
   runtime               = "nodejs20.x"
   role                  = aws_iam_role.lambda_exec_role.arn
-  reserved_concurrent_executions = var.lambda_reserved_concurrency
 
   environment {
     variables = {
@@ -75,7 +81,7 @@ resource "aws_lambda_function" "sqs_ses_consumer" {
   }
 
   dead_letter_config {
-    target_arn = aws_sqs_queue.lambda_dlq.arn
+    target_arn = aws_sqs_queue.lambda_dlq_sqs_ses.arn
   }
 
   vpc_config {
@@ -84,12 +90,11 @@ resource "aws_lambda_function" "sqs_ses_consumer" {
   }
 
   depends_on = [
-    aws_sqs_queue.lambda_dlq,
+    aws_sqs_queue.lambda_dlq_sqs_ses,
     aws_sqs_queue_policy.lambda_dlq_policy
   ]
 }
 
-# Asociación de la cola de eventos con la función Lambda
 resource "aws_lambda_event_source_mapping" "sqs_to_lambda" {
   event_source_arn = aws_sqs_queue.event_queue.arn
   function_name    = aws_lambda_function.sqs_ses_consumer.arn

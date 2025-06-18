@@ -26,7 +26,6 @@ resource "aws_lambda_function" "register_event" {
   runtime          = "nodejs18.x"
   source_code_hash = filebase64sha256("${path.module}/bin/registerEvent.zip")
 
-  reserved_concurrent_executions = var.lambda_reserved_concurrency
 
   #Conexión a la VPC
   vpc_config {
