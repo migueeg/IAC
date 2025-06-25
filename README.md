@@ -94,3 +94,13 @@ terraform plan
 
 # Aplicar cambios
 terraform apply
+
+## Usos de comandos para docker para subir el Pipeline
+
+## Para subir contenedores
+
+docker compose up --build
+
+## Para bajarlos
+docker compose down --volumes
+
