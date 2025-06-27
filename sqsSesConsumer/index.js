@@ -1,7 +1,8 @@
 const AWS = require("aws-sdk");
-const ses = new AWS.SES();
 
-exports.handler = async (event) => {
+exports.handler = async (event, injectedSes = null) => {
+  const ses = injectedSes || new AWS.SES();
+
   for (const record of event.Records) {
     const messageBody = record.body;
 
