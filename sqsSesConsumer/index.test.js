@@ -20,7 +20,8 @@ describe("Lambda sqsSesConsumer", () => {
       ],
     };
 
-    const response = await handler(event, sesMock); // inyectamos el mock directamente
+    // inyecta como cuarto parámetro
+    const response = await handler(event, null, null, sesMock);
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBe("Proceso completado.");
