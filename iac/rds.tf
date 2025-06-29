@@ -1,4 +1,4 @@
-# Instancia de PostgreSQL
+# Instancia de PostgreSQL 
 resource "aws_db_instance" "postgres_db" {
   identifier           = "eventos-db"
   engine              = "postgres"
@@ -70,13 +70,13 @@ resource "aws_security_group" "lambda_sg" {
   description = "Security group for Lambda functions"
   vpc_id      = aws_vpc.main_vpc.id
 
-  # Permitir todo el tráfico saliente
+  # Permitir salida únicamente a recursos de la VPC
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow all outbound traffic"
+    cidr_blocks = [aws_vpc.main_vpc.cidr_block]
+    description = "Allow outbound traffic to VPC resources only"
   }
 
   tags = {
