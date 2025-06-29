@@ -11,7 +11,7 @@ resource "aws_lambda_function" "create_event" {
   source_code_hash = data.archive_file.lambda_create_event.output_base64sha256
   handler          = "index.handler"
   runtime          = "nodejs16.x"
-  role            = aws_iam_role.lambda_exec_role.arn
+  role             = aws_iam_role.lambda_exec_role.arn
   
   vpc_config {
     subnet_ids         = [aws_subnet.private_a.id]
@@ -26,5 +26,9 @@ resource "aws_lambda_function" "create_event" {
       DB_USER   = var.db_username
       DB_PASS   = var.db_password
     }
+  }
+
+  tracing_config {
+    mode = "Active"
   }
 }
