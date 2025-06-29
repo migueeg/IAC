@@ -2,6 +2,13 @@
   "name": "create-event-lambda",
   "version": "1.0.0",
   "dependencies": {
-    "pg": "^8.16.0"
+    "pg": "^8.16.0",
+    "aws-sdk": "^2.1692.0"
+  },
+  "devDependencies": {
+    "jest": "^30.0.3"
+  },
+  "scripts": {
+    "test": "jest"
   }
 }

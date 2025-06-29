@@ -14,7 +14,7 @@ resource "aws_lambda_function" "create_event" {
   role            = aws_iam_role.lambda_exec_role.arn
   
   vpc_config {
-    subnet_ids         = [aws_subnet.public_a.id, aws_subnet.public_b.id]
+    subnet_ids         = [aws_subnet.private_a.id]
     security_group_ids = [aws_security_group.lambda_sg.id]
   }
 

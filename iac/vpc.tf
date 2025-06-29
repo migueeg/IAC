@@ -55,6 +55,43 @@ resource "aws_route_table" "public" {
   }
 }
 
+# Subred privada
+resource "aws_subnet" "private_a" {
+  vpc_id                  = aws_vpc.main_vpc.id
+  cidr_block              = "10.0.3.0/24"
+  availability_zone       = "us-east-2a"
+  map_public_ip_on_launch = false
+  tags = { Name = "private-subnet-a" }
+}
+
+# Elastic IP para NAT Gateway
+resource "aws_eip" "nat" {
+  vpc = true
+}
+
+# NAT Gateway en subred pública
+resource "aws_nat_gateway" "nat" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = aws_subnet.public_a.id
+  tags = { Name = "main-nat" }
+}
+
+# Tabla de rutas privada
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.main_vpc.id
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat.id
+  }
+  tags = { Name = "private-rt" }
+}
+
+# Asociación de tabla de rutas privada
+resource "aws_route_table_association" "private_a" {
+  subnet_id      = aws_subnet.private_a.id
+  route_table_id = aws_route_table.private.id
+}
+
 # Route Table Associations
 resource "aws_route_table_association" "public_a" {
   subnet_id      = aws_subnet.public_a.id
