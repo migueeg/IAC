@@ -1,0 +1,14 @@
+version: '3'
+services:
+  checkov:
+    image: bridgecrew/checkov
+    container_name: checkov
+    volumes:
+      - ../iac:/app
+      - ./results:/output
+    working_dir: /app
+    command: >
+      --directory /app
+      -o junitxml
+      --output-file-path /output/results.xml
+      --skip-check=CKV_AWS_59
