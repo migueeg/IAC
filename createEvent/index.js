@@ -42,9 +42,14 @@ exports.handler = async (event) => {
       StreamName: 'event-stream'
     };
 
-    await kinesis.putRecord(kinesisParams).promise();
-    console.log("Evento enviado a Kinesis:", payload);
-    
+    console.log("Enviando a Kinesis...");
+    try {
+      await kinesis.putRecord(kinesisParams).promise();
+      console.log("Evento enviado a Kinesis:", payload);
+    } catch (kinesisError) {
+      console.error("Error enviando a Kinesis:", kinesisError);
+    }
+
     return {
       statusCode: 201,
       headers: {

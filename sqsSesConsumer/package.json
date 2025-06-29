@@ -5,6 +5,9 @@
   "scripts": {
     "test": "jest"
   },
+  "dependencies": {
+    "aws-sdk": "^2.1692.0"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
