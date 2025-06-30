@@ -11,9 +11,9 @@ data "archive_file" "lambda_login_user" {
 resource "aws_lambda_function" "login_user" {
   filename         = data.archive_file.lambda_login_user.output_path  
   function_name    = "lambda-login-user"    
-  role            = aws_iam_role.lambda_exec_role.arn  
-  handler         = "index.handler"        
-  runtime         = "nodejs16.x"         
+  role             = aws_iam_role.lambda_exec_role.arn  
+  handler          = "index.handler"        
+  runtime          = "nodejs16.x"         
   
   # Hash del código fuente para detectar cambios
   source_code_hash = data.archive_file.lambda_login_user.output_base64sha256
@@ -33,4 +33,7 @@ resource "aws_lambda_function" "login_user" {
       DB_PASS = var.db_password                       # Contraseña de la base de datos
     }
   }
+
+  # 🚀 Límite de concurrencia por función (solución CKV_AWS_115)
+  reserved_concurrent_executions = 5
 }
