@@ -22,4 +22,10 @@ resource "aws_lambda_function" "register_event" {
       TABLE_NAME = "tabla_eventos"
     }
   }
+
+  # Añadido para configurar Lambda dentro de la VPC
+  vpc_config {
+    subnet_ids         = [aws_subnet.private_a.id]
+    security_group_ids = [aws_security_group.lambda_sg.id]
+  }
 }
