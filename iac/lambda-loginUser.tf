@@ -34,6 +34,6 @@ resource "aws_lambda_function" "login_user" {
     }
   }
 
-  # 🚀 Límite de concurrencia por función (solución CKV_AWS_115)
+  # Límite de concurrencia por función (solución CKV_AWS_115)
   reserved_concurrent_executions = 5
 }
