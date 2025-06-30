@@ -29,6 +29,9 @@ resource "aws_api_gateway_method" "login_post" {
   resource_id   = aws_api_gateway_resource.login.id
   http_method   = "POST"
   authorization = "NONE"
+
+  # Validación de solicitud
+  request_validator_id = aws_api_gateway_request_validator.validate_body_and_params.id
 }
 
 resource "aws_api_gateway_method" "eventos_post" {
@@ -36,6 +39,9 @@ resource "aws_api_gateway_method" "eventos_post" {
   resource_id   = aws_api_gateway_resource.eventos.id
   http_method   = "POST"
   authorization = "NONE"
+
+  #  Validación de solicitud
+  request_validator_id = aws_api_gateway_request_validator.validate_body_and_params.id
 }
 
 resource "aws_api_gateway_method" "post_register_event" {
@@ -43,6 +49,9 @@ resource "aws_api_gateway_method" "post_register_event" {
   resource_id   = aws_api_gateway_resource.register_event.id
   http_method   = "POST"
   authorization = "NONE"
+
+  #  Validación de solicitud
+  request_validator_id = aws_api_gateway_request_validator.validate_body_and_params.id
 }
 
 # Integraciones Lambda
@@ -91,6 +100,14 @@ resource "aws_api_gateway_stage" "api_stage" {
 
   # Habilitar X-Ray tracing (solución CKV_AWS_73)
   xray_tracing_enabled = true
+}
+
+#  Validación de solicitudes (nuevo recurso)
+resource "aws_api_gateway_request_validator" "validate_body_and_params" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  name        = "validate-body-and-params"
+  validate_request_body       = true
+  validate_request_parameters = true
 }
 
 # Permisos Lambda para invocación desde API Gateway
