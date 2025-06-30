@@ -28,4 +28,7 @@ resource "aws_lambda_function" "register_event" {
     subnet_ids         = [aws_subnet.private_a.id]
     security_group_ids = [aws_security_group.lambda_sg.id]
   }
+
+  # Límite de concurrencia para cumplir CKV_AWS_115
+  reserved_concurrent_executions = 5
 }
