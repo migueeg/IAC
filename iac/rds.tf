@@ -13,6 +13,9 @@ resource "aws_db_instance" "postgres_db" {
 
   # Habilitar Multi-AZ
   multi_az             = true
+
+  # Habilitar copia de etiquetas en snapshots
+  copy_tags_to_snapshot = true
   
   # Configuración de VPC
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name

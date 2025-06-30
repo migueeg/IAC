@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
-<testsuites disabled="0" errors="0" failures="64" tests="169" time="0.0">
-	<testsuite disabled="0" errors="0" failures="64" name="terraform scan" skipped="0" tests="169" time="0">
+<testsuites disabled="0" errors="0" failures="63" tests="169" time="0.0">
+	<testsuite disabled="0" errors="0" failures="63" name="terraform scan" skipped="0" tests="169" time="0">
 		<properties>
 			<property name="directory" value="['/app']"/>
 			<property name="add_check" value="False"/>
@@ -111,29 +111,30 @@
 		<testcase name="[NONE][CKV_AWS_130] Ensure VPC subnets do not assign public IP by default" classname="/vpc.tf.aws_subnet.public_a" file="/vpc.tf"/>
 		<testcase name="[NONE][CKV_AWS_130] Ensure VPC subnets do not assign public IP by default" classname="/vpc.tf.aws_subnet.public_b" file="/vpc.tf"/>
 		<testcase name="[NONE][CKV_AWS_130] Ensure VPC subnets do not assign public IP by default" classname="/vpc.tf.aws_subnet.private_a" file="/vpc.tf"/>
+		<testcase name="[NONE][CKV2_AWS_46] Ensure AWS CloudFront Distribution with S3 have Origin Access set to enabled" classname="/cloudfront.tf.aws_cloudfront_distribution.cdn" file="/cloudfront.tf"/>
 		<testcase name="[NONE][CKV2_AWS_56] Ensure AWS Managed IAMFullAccess IAM policy is not used." classname="/iam-lambda.tf.aws_iam_role.lambda_exec_role" file="/iam-lambda.tf"/>
 		<testcase name="[NONE][CKV2_AWS_56] Ensure AWS Managed IAMFullAccess IAM policy is not used." classname="/iam-lambda.tf.aws_iam_role_policy_attachment.lambda_dynamodb_access" file="/iam-lambda.tf"/>
 		<testcase name="[NONE][CKV2_AWS_56] Ensure AWS Managed IAMFullAccess IAM policy is not used." classname="/iam-lambda.tf.aws_iam_role_policy_attachment.lambda_sqs_access" file="/iam-lambda.tf"/>
 		<testcase name="[NONE][CKV2_AWS_56] Ensure AWS Managed IAMFullAccess IAM policy is not used." classname="/iam-lambda.tf.aws_iam_role_policy_attachment.lambda_ses_access" file="/iam-lambda.tf"/>
 		<testcase name="[NONE][CKV2_AWS_56] Ensure AWS Managed IAMFullAccess IAM policy is not used." classname="/iam-lambda.tf.aws_iam_role_policy_attachment.lambda_kinesis_access" file="/iam-lambda.tf"/>
 		<testcase name="[NONE][CKV2_AWS_77] Ensure AWS API Gateway Rest API attached WAFv2 WebACL is configured with AMR for Log4j Vulnerability" classname="/apigateway.tf.aws_api_gateway_stage.api_stage" file="/apigateway.tf"/>
-		<testcase name="[NONE][CKV2_AWS_46] Ensure AWS CloudFront Distribution with S3 have Origin Access set to enabled" classname="/cloudfront.tf.aws_cloudfront_distribution.cdn" file="/cloudfront.tf"/>
+		<testcase name="[NONE][CKV2_AWS_60] Ensure RDS instance with copy tags to snapshots is enabled" classname="/rds.tf.aws_db_instance.postgres_db" file="/rds.tf"/>
+		<testcase name="[NONE][CKV2_AWS_19] Ensure that all EIP addresses allocated to a VPC are attached to EC2 instances" classname="/vpc.tf.aws_eip.nat" file="/vpc.tf"/>
+		<testcase name="[NONE][CKV_AWS_57] S3 Bucket has an ACL defined which allows public WRITE access." classname="/s3.tf.aws_s3_bucket.mi_bucket_web" file="/s3.tf"/>
 		<testcase name="[NONE][CKV2_AWS_75] Ensure no open CORS policy" classname="/lambda-createEvent.tf.aws_lambda_function.create_event" file="/lambda-createEvent.tf"/>
 		<testcase name="[NONE][CKV2_AWS_75] Ensure no open CORS policy" classname="/lambda-kinesis-consumer.tf.aws_lambda_function.kinesis_consumer" file="/lambda-kinesis-consumer.tf"/>
 		<testcase name="[NONE][CKV2_AWS_75] Ensure no open CORS policy" classname="/lambda-loginUser.tf.aws_lambda_function.login_user" file="/lambda-loginUser.tf"/>
 		<testcase name="[NONE][CKV2_AWS_75] Ensure no open CORS policy" classname="/lambda-registerEvent.tf.aws_lambda_function.register_event" file="/lambda-registerEvent.tf"/>
 		<testcase name="[NONE][CKV2_AWS_75] Ensure no open CORS policy" classname="/lambda-sqs-ses.tf.aws_lambda_function.sqs_ses_consumer" file="/lambda-sqs-ses.tf"/>
-		<testcase name="[NONE][CKV_AWS_57] S3 Bucket has an ACL defined which allows public WRITE access." classname="/s3.tf.aws_s3_bucket.mi_bucket_web" file="/s3.tf"/>
-		<testcase name="[NONE][CKV2_AWS_19] Ensure that all EIP addresses allocated to a VPC are attached to EC2 instances" classname="/vpc.tf.aws_eip.nat" file="/vpc.tf"/>
 		<testcase name="[NONE][CKV2_AWS_44] Ensure AWS route table with VPC peering does not contain routes overly permissive to all traffic" classname="/vpc.tf.aws_route_table.public" file="/vpc.tf"/>
 		<testcase name="[NONE][CKV2_AWS_44] Ensure AWS route table with VPC peering does not contain routes overly permissive to all traffic" classname="/vpc.tf.aws_route_table.private" file="/vpc.tf"/>
+		<testcase name="[NONE][CKV2_AWS_53] Ensure AWS API gateway request is validated" classname="/apigateway.tf.aws_api_gateway_method.login_post" file="/apigateway.tf"/>
+		<testcase name="[NONE][CKV2_AWS_53] Ensure AWS API gateway request is validated" classname="/apigateway.tf.aws_api_gateway_method.eventos_post" file="/apigateway.tf"/>
+		<testcase name="[NONE][CKV2_AWS_53] Ensure AWS API gateway request is validated" classname="/apigateway.tf.aws_api_gateway_method.post_register_event" file="/apigateway.tf"/>
 		<testcase name="[NONE][CKV2_AWS_54] Ensure AWS CloudFront distribution is using secure SSL protocols for HTTPS communication" classname="/cloudfront.tf.aws_cloudfront_distribution.cdn" file="/cloudfront.tf"/>
 		<testcase name="[NONE][CKV2_AWS_40] Ensure AWS IAM policy does not allow full IAM privileges" classname="/iam-lambda.tf.aws_iam_policy.lambda_policy" file="/iam-lambda.tf"/>
 		<testcase name="[NONE][CKV2_AWS_73] Ensure AWS SQS uses CMK not AWS default keys for encryption" classname="/sqs.tf.aws_sqs_queue.event_queue" file="/sqs.tf"/>
 		<testcase name="[NONE][CKV2_AWS_72] Ensure AWS CloudFront origin protocol policy enforces HTTPS-only" classname="/cloudfront.tf.aws_cloudfront_distribution.cdn" file="/cloudfront.tf"/>
-		<testcase name="[NONE][CKV2_AWS_53] Ensure AWS API gateway request is validated" classname="/apigateway.tf.aws_api_gateway_method.login_post" file="/apigateway.tf"/>
-		<testcase name="[NONE][CKV2_AWS_53] Ensure AWS API gateway request is validated" classname="/apigateway.tf.aws_api_gateway_method.eventos_post" file="/apigateway.tf"/>
-		<testcase name="[NONE][CKV2_AWS_53] Ensure AWS API gateway request is validated" classname="/apigateway.tf.aws_api_gateway_method.post_register_event" file="/apigateway.tf"/>
 		<testcase name="[NONE][CKV_AWS_20] S3 Bucket has an ACL defined which allows public READ access." classname="/s3.tf.aws_s3_bucket.mi_bucket_web" file="/s3.tf"/>
 		<testcase name="[NONE][CKV2_AWS_35] AWS NAT Gateways should be utilized for the default route" classname="/vpc.tf.aws_route_table.public" file="/vpc.tf"/>
 		<testcase name="[NONE][CKV2_AWS_35] AWS NAT Gateways should be utilized for the default route" classname="/vpc.tf.aws_route_table.private" file="/vpc.tf"/>
@@ -1299,7 +1300,7 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		<testcase name="[NONE][CKV_AWS_161] Ensure RDS database has IAM authentication enabled" classname="/rds.tf.aws_db_instance.postgres_db" file="/rds.tf">
 			<failure type="failure" message="Ensure RDS database has IAM authentication enabled">
 Resource: aws_db_instance.postgres_db
-File: /rds.tf: 2-26
+File: /rds.tf: 2-29
 Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-rds-database-has-iam-authentication-enabled
 
 		2  | resource &quot;aws_db_instance&quot; &quot;postgres_db&quot; {
@@ -1316,23 +1317,26 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		13 | 
 		14 |   # Habilitar Multi-AZ
 		15 |   multi_az             = true
-		16 |   
-		17 |   # Configuración de VPC
-		18 |   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
-		19 |   vpc_security_group_ids = [aws_security_group.rds_sg.id]
-		20 |   
-		21 |   skip_final_snapshot = true
-		22 | 
-		23 |   tags = {
-		24 |     Environment = var.environment
-		25 |   }
-		26 | }
+		16 | 
+		17 |   # Habilitar copia de etiquetas en snapshots
+		18 |   copy_tags_to_snapshot = true
+		19 |   
+		20 |   # Configuración de VPC
+		21 |   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
+		22 |   vpc_security_group_ids = [aws_security_group.rds_sg.id]
+		23 |   
+		24 |   skip_final_snapshot = true
+		25 | 
+		26 |   tags = {
+		27 |     Environment = var.environment
+		28 |   }
+		29 | }
 </failure>
 		</testcase>
 		<testcase name="[NONE][CKV_AWS_118] Ensure that enhanced monitoring is enabled for Amazon RDS instances" classname="/rds.tf.aws_db_instance.postgres_db" file="/rds.tf">
 			<failure type="failure" message="Ensure that enhanced monitoring is enabled for Amazon RDS instances">
 Resource: aws_db_instance.postgres_db
-File: /rds.tf: 2-26
+File: /rds.tf: 2-29
 Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/ensure-that-enhanced-monitoring-is-enabled-for-amazon-rds-instances
 
 		2  | resource &quot;aws_db_instance&quot; &quot;postgres_db&quot; {
@@ -1349,23 +1353,26 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		13 | 
 		14 |   # Habilitar Multi-AZ
 		15 |   multi_az             = true
-		16 |   
-		17 |   # Configuración de VPC
-		18 |   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
-		19 |   vpc_security_group_ids = [aws_security_group.rds_sg.id]
-		20 |   
-		21 |   skip_final_snapshot = true
-		22 | 
-		23 |   tags = {
-		24 |     Environment = var.environment
-		25 |   }
-		26 | }
+		16 | 
+		17 |   # Habilitar copia de etiquetas en snapshots
+		18 |   copy_tags_to_snapshot = true
+		19 |   
+		20 |   # Configuración de VPC
+		21 |   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
+		22 |   vpc_security_group_ids = [aws_security_group.rds_sg.id]
+		23 |   
+		24 |   skip_final_snapshot = true
+		25 | 
+		26 |   tags = {
+		27 |     Environment = var.environment
+		28 |   }
+		29 | }
 </failure>
 		</testcase>
 		<testcase name="[NONE][CKV_AWS_17] Ensure all data stored in RDS is not publicly accessible" classname="/rds.tf.aws_db_instance.postgres_db" file="/rds.tf">
 			<failure type="failure" message="Ensure all data stored in RDS is not publicly accessible">
 Resource: aws_db_instance.postgres_db
-File: /rds.tf: 2-26
+File: /rds.tf: 2-29
 Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/public-policies/public-2
 
 		2  | resource &quot;aws_db_instance&quot; &quot;postgres_db&quot; {
@@ -1382,23 +1389,26 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		13 | 
 		14 |   # Habilitar Multi-AZ
 		15 |   multi_az             = true
-		16 |   
-		17 |   # Configuración de VPC
-		18 |   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
-		19 |   vpc_security_group_ids = [aws_security_group.rds_sg.id]
-		20 |   
-		21 |   skip_final_snapshot = true
-		22 | 
-		23 |   tags = {
-		24 |     Environment = var.environment
-		25 |   }
-		26 | }
+		16 | 
+		17 |   # Habilitar copia de etiquetas en snapshots
+		18 |   copy_tags_to_snapshot = true
+		19 |   
+		20 |   # Configuración de VPC
+		21 |   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
+		22 |   vpc_security_group_ids = [aws_security_group.rds_sg.id]
+		23 |   
+		24 |   skip_final_snapshot = true
+		25 | 
+		26 |   tags = {
+		27 |     Environment = var.environment
+		28 |   }
+		29 | }
 </failure>
 		</testcase>
 		<testcase name="[NONE][CKV_AWS_129] Ensure that respective logs of Amazon Relational Database Service (Amazon RDS) are enabled" classname="/rds.tf.aws_db_instance.postgres_db" file="/rds.tf">
 			<failure type="failure" message="Ensure that respective logs of Amazon Relational Database Service (Amazon RDS) are enabled">
 Resource: aws_db_instance.postgres_db
-File: /rds.tf: 2-26
+File: /rds.tf: 2-29
 Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-that-respective-logs-of-amazon-relational-database-service-amazon-rds-are-enabled
 
 		2  | resource &quot;aws_db_instance&quot; &quot;postgres_db&quot; {
@@ -1415,23 +1425,26 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		13 | 
 		14 |   # Habilitar Multi-AZ
 		15 |   multi_az             = true
-		16 |   
-		17 |   # Configuración de VPC
-		18 |   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
-		19 |   vpc_security_group_ids = [aws_security_group.rds_sg.id]
-		20 |   
-		21 |   skip_final_snapshot = true
-		22 | 
-		23 |   tags = {
-		24 |     Environment = var.environment
-		25 |   }
-		26 | }
+		16 | 
+		17 |   # Habilitar copia de etiquetas en snapshots
+		18 |   copy_tags_to_snapshot = true
+		19 |   
+		20 |   # Configuración de VPC
+		21 |   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
+		22 |   vpc_security_group_ids = [aws_security_group.rds_sg.id]
+		23 |   
+		24 |   skip_final_snapshot = true
+		25 | 
+		26 |   tags = {
+		27 |     Environment = var.environment
+		28 |   }
+		29 | }
 </failure>
 		</testcase>
 		<testcase name="[NONE][CKV_AWS_353] Ensure that RDS instances have performance insights enabled" classname="/rds.tf.aws_db_instance.postgres_db" file="/rds.tf">
 			<failure type="failure" message="Ensure that RDS instances have performance insights enabled">
 Resource: aws_db_instance.postgres_db
-File: /rds.tf: 2-26
+File: /rds.tf: 2-29
 Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-353
 
 		2  | resource &quot;aws_db_instance&quot; &quot;postgres_db&quot; {
@@ -1448,23 +1461,26 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		13 | 
 		14 |   # Habilitar Multi-AZ
 		15 |   multi_az             = true
-		16 |   
-		17 |   # Configuración de VPC
-		18 |   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
-		19 |   vpc_security_group_ids = [aws_security_group.rds_sg.id]
-		20 |   
-		21 |   skip_final_snapshot = true
-		22 | 
-		23 |   tags = {
-		24 |     Environment = var.environment
-		25 |   }
-		26 | }
+		16 | 
+		17 |   # Habilitar copia de etiquetas en snapshots
+		18 |   copy_tags_to_snapshot = true
+		19 |   
+		20 |   # Configuración de VPC
+		21 |   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
+		22 |   vpc_security_group_ids = [aws_security_group.rds_sg.id]
+		23 |   
+		24 |   skip_final_snapshot = true
+		25 | 
+		26 |   tags = {
+		27 |     Environment = var.environment
+		28 |   }
+		29 | }
 </failure>
 		</testcase>
 		<testcase name="[NONE][CKV_AWS_293] Ensure that AWS database instances have deletion protection enabled" classname="/rds.tf.aws_db_instance.postgres_db" file="/rds.tf">
 			<failure type="failure" message="Ensure that AWS database instances have deletion protection enabled">
 Resource: aws_db_instance.postgres_db
-File: /rds.tf: 2-26
+File: /rds.tf: 2-29
 Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-293
 
 		2  | resource &quot;aws_db_instance&quot; &quot;postgres_db&quot; {
@@ -1481,23 +1497,26 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		13 | 
 		14 |   # Habilitar Multi-AZ
 		15 |   multi_az             = true
-		16 |   
-		17 |   # Configuración de VPC
-		18 |   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
-		19 |   vpc_security_group_ids = [aws_security_group.rds_sg.id]
-		20 |   
-		21 |   skip_final_snapshot = true
-		22 | 
-		23 |   tags = {
-		24 |     Environment = var.environment
-		25 |   }
-		26 | }
+		16 | 
+		17 |   # Habilitar copia de etiquetas en snapshots
+		18 |   copy_tags_to_snapshot = true
+		19 |   
+		20 |   # Configuración de VPC
+		21 |   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
+		22 |   vpc_security_group_ids = [aws_security_group.rds_sg.id]
+		23 |   
+		24 |   skip_final_snapshot = true
+		25 | 
+		26 |   tags = {
+		27 |     Environment = var.environment
+		28 |   }
+		29 | }
 </failure>
 		</testcase>
 		<testcase name="[NONE][CKV_AWS_226] Ensure DB instance gets all minor upgrades automatically" classname="/rds.tf.aws_db_instance.postgres_db" file="/rds.tf">
 			<failure type="failure" message="Ensure DB instance gets all minor upgrades automatically">
 Resource: aws_db_instance.postgres_db
-File: /rds.tf: 2-26
+File: /rds.tf: 2-29
 Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-aws-db-instance-gets-all-minor-upgrades-automatically
 
 		2  | resource &quot;aws_db_instance&quot; &quot;postgres_db&quot; {
@@ -1514,23 +1533,26 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		13 | 
 		14 |   # Habilitar Multi-AZ
 		15 |   multi_az             = true
-		16 |   
-		17 |   # Configuración de VPC
-		18 |   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
-		19 |   vpc_security_group_ids = [aws_security_group.rds_sg.id]
-		20 |   
-		21 |   skip_final_snapshot = true
-		22 | 
-		23 |   tags = {
-		24 |     Environment = var.environment
-		25 |   }
-		26 | }
+		16 | 
+		17 |   # Habilitar copia de etiquetas en snapshots
+		18 |   copy_tags_to_snapshot = true
+		19 |   
+		20 |   # Configuración de VPC
+		21 |   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
+		22 |   vpc_security_group_ids = [aws_security_group.rds_sg.id]
+		23 |   
+		24 |   skip_final_snapshot = true
+		25 | 
+		26 |   tags = {
+		27 |     Environment = var.environment
+		28 |   }
+		29 | }
 </failure>
 		</testcase>
 		<testcase name="[NONE][CKV_AWS_16] Ensure all data stored in the RDS is securely encrypted at rest" classname="/rds.tf.aws_db_instance.postgres_db" file="/rds.tf">
 			<failure type="failure" message="Ensure all data stored in the RDS is securely encrypted at rest">
 Resource: aws_db_instance.postgres_db
-File: /rds.tf: 2-26
+File: /rds.tf: 2-29
 Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/general-4
 
 		2  | resource &quot;aws_db_instance&quot; &quot;postgres_db&quot; {
@@ -1547,93 +1569,96 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		13 | 
 		14 |   # Habilitar Multi-AZ
 		15 |   multi_az             = true
-		16 |   
-		17 |   # Configuración de VPC
-		18 |   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
-		19 |   vpc_security_group_ids = [aws_security_group.rds_sg.id]
-		20 |   
-		21 |   skip_final_snapshot = true
-		22 | 
-		23 |   tags = {
-		24 |     Environment = var.environment
-		25 |   }
-		26 | }
+		16 | 
+		17 |   # Habilitar copia de etiquetas en snapshots
+		18 |   copy_tags_to_snapshot = true
+		19 |   
+		20 |   # Configuración de VPC
+		21 |   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
+		22 |   vpc_security_group_ids = [aws_security_group.rds_sg.id]
+		23 |   
+		24 |   skip_final_snapshot = true
+		25 | 
+		26 |   tags = {
+		27 |     Environment = var.environment
+		28 |   }
+		29 | }
 </failure>
 		</testcase>
 		<testcase name="[NONE][CKV_AWS_23] Ensure every security group and rule has a description" classname="/rds.tf.aws_security_group.rds_sg" file="/rds.tf">
 			<failure type="failure" message="Ensure every security group and rule has a description">
 Resource: aws_security_group.rds_sg
-File: /rds.tf: 39-68
+File: /rds.tf: 42-71
 Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-31
 
-		39 | resource &quot;aws_security_group&quot; &quot;rds_sg&quot; {
-		40 |   name        = &quot;rds-security-group&quot;
-		41 |   description = &quot;Security group for RDS PostgreSQL&quot;
-		42 |   vpc_id      = aws_vpc.main_vpc.id
-		43 | 
-		44 |   # Regla para acceso a PostgreSQL
-		45 |   ingress {
-		46 |     from_port   = 5432
-		47 |     to_port     = 5432
-		48 |     protocol    = &quot;tcp&quot;
-		49 |     cidr_blocks = var.allowed_cidr_blocks
-		50 |     description = &quot;PostgreSQL access from anywhere (development only)&quot;
-		51 |   }
-		52 | 
-		53 |   # Acceso desde Lambda
-		54 |   ingress {
-		55 |     from_port       = 5432
-		56 |     to_port         = 5432
-		57 |     protocol        = &quot;tcp&quot;
-		58 |     security_groups = [aws_security_group.lambda_sg.id]
-		59 |     description     = &quot;Access from Lambda functions&quot;
-		60 |   }
-		61 | 
-		62 |   egress {
-		63 |     from_port   = 0
-		64 |     to_port     = 0
-		65 |     protocol    = &quot;-1&quot;
-		66 |     cidr_blocks = [&quot;0.0.0.0/0&quot;]
-		67 |   }
-		68 | }
+		42 | resource &quot;aws_security_group&quot; &quot;rds_sg&quot; {
+		43 |   name        = &quot;rds-security-group&quot;
+		44 |   description = &quot;Security group for RDS PostgreSQL&quot;
+		45 |   vpc_id      = aws_vpc.main_vpc.id
+		46 | 
+		47 |   # Regla para acceso a PostgreSQL
+		48 |   ingress {
+		49 |     from_port   = 5432
+		50 |     to_port     = 5432
+		51 |     protocol    = &quot;tcp&quot;
+		52 |     cidr_blocks = var.allowed_cidr_blocks
+		53 |     description = &quot;PostgreSQL access from anywhere (development only)&quot;
+		54 |   }
+		55 | 
+		56 |   # Acceso desde Lambda
+		57 |   ingress {
+		58 |     from_port       = 5432
+		59 |     to_port         = 5432
+		60 |     protocol        = &quot;tcp&quot;
+		61 |     security_groups = [aws_security_group.lambda_sg.id]
+		62 |     description     = &quot;Access from Lambda functions&quot;
+		63 |   }
+		64 | 
+		65 |   egress {
+		66 |     from_port   = 0
+		67 |     to_port     = 0
+		68 |     protocol    = &quot;-1&quot;
+		69 |     cidr_blocks = [&quot;0.0.0.0/0&quot;]
+		70 |   }
+		71 | }
 </failure>
 		</testcase>
 		<testcase name="[NONE][CKV_AWS_382] Ensure no security groups allow egress from 0.0.0.0:0 to port -1" classname="/rds.tf.aws_security_group.rds_sg" file="/rds.tf">
 			<failure type="failure" message="Ensure no security groups allow egress from 0.0.0.0:0 to port -1">
 Resource: aws_security_group.rds_sg
-File: /rds.tf: 39-68
+File: /rds.tf: 42-71
 Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-382
 
-		39 | resource &quot;aws_security_group&quot; &quot;rds_sg&quot; {
-		40 |   name        = &quot;rds-security-group&quot;
-		41 |   description = &quot;Security group for RDS PostgreSQL&quot;
-		42 |   vpc_id      = aws_vpc.main_vpc.id
-		43 | 
-		44 |   # Regla para acceso a PostgreSQL
-		45 |   ingress {
-		46 |     from_port   = 5432
-		47 |     to_port     = 5432
-		48 |     protocol    = &quot;tcp&quot;
-		49 |     cidr_blocks = var.allowed_cidr_blocks
-		50 |     description = &quot;PostgreSQL access from anywhere (development only)&quot;
-		51 |   }
-		52 | 
-		53 |   # Acceso desde Lambda
-		54 |   ingress {
-		55 |     from_port       = 5432
-		56 |     to_port         = 5432
-		57 |     protocol        = &quot;tcp&quot;
-		58 |     security_groups = [aws_security_group.lambda_sg.id]
-		59 |     description     = &quot;Access from Lambda functions&quot;
-		60 |   }
-		61 | 
-		62 |   egress {
-		63 |     from_port   = 0
-		64 |     to_port     = 0
-		65 |     protocol    = &quot;-1&quot;
-		66 |     cidr_blocks = [&quot;0.0.0.0/0&quot;]
-		67 |   }
-		68 | }
+		42 | resource &quot;aws_security_group&quot; &quot;rds_sg&quot; {
+		43 |   name        = &quot;rds-security-group&quot;
+		44 |   description = &quot;Security group for RDS PostgreSQL&quot;
+		45 |   vpc_id      = aws_vpc.main_vpc.id
+		46 | 
+		47 |   # Regla para acceso a PostgreSQL
+		48 |   ingress {
+		49 |     from_port   = 5432
+		50 |     to_port     = 5432
+		51 |     protocol    = &quot;tcp&quot;
+		52 |     cidr_blocks = var.allowed_cidr_blocks
+		53 |     description = &quot;PostgreSQL access from anywhere (development only)&quot;
+		54 |   }
+		55 | 
+		56 |   # Acceso desde Lambda
+		57 |   ingress {
+		58 |     from_port       = 5432
+		59 |     to_port         = 5432
+		60 |     protocol        = &quot;tcp&quot;
+		61 |     security_groups = [aws_security_group.lambda_sg.id]
+		62 |     description     = &quot;Access from Lambda functions&quot;
+		63 |   }
+		64 | 
+		65 |   egress {
+		66 |     from_port   = 0
+		67 |     to_port     = 0
+		68 |     protocol    = &quot;-1&quot;
+		69 |     cidr_blocks = [&quot;0.0.0.0/0&quot;]
+		70 |   }
+		71 | }
 </failure>
 		</testcase>
 		<testcase name="[NONE][CKV_AWS_27] Ensure all data stored in the SQS queue is encrypted" classname="/sqs.tf.aws_sqs_queue.event_queue" file="/sqs.tf">
@@ -1735,55 +1760,6 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		51 |   depends_on = [aws_s3_bucket_policy.bucket_oai_policy]
 		52 | }</failure>
 		</testcase>
-		<testcase name="[NONE][CKV2_AWS_60] Ensure RDS instance with copy tags to snapshots is enabled" classname="/rds.tf.aws_db_instance.postgres_db" file="/rds.tf">
-			<failure type="failure" message="Ensure RDS instance with copy tags to snapshots is enabled">
-Resource: aws_db_instance.postgres_db
-File: /rds.tf: 2-26
-Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-2-60
-
-		2  | resource &quot;aws_db_instance&quot; &quot;postgres_db&quot; {
-		3  |   identifier           = &quot;eventos-db&quot;
-		4  |   engine               = &quot;postgres&quot;
-		5  |   engine_version       = &quot;14&quot;
-		6  |   instance_class       = &quot;db.t3.micro&quot;
-		7  |   allocated_storage    = 20
-		8  |   publicly_accessible  = true
-		9  | 
-		10 |   db_name              = &quot;eventosdb&quot;
-		11 |   username             = var.db_username
-		12 |   password             = var.db_password
-		13 | 
-		14 |   # Habilitar Multi-AZ
-		15 |   multi_az             = true
-		16 |   
-		17 |   # Configuración de VPC
-		18 |   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
-		19 |   vpc_security_group_ids = [aws_security_group.rds_sg.id]
-		20 |   
-		21 |   skip_final_snapshot = true
-		22 | 
-		23 |   tags = {
-		24 |     Environment = var.environment
-		25 |   }
-		26 | }
-</failure>
-		</testcase>
-		<testcase name="[NONE][CKV2_AWS_51] Ensure AWS API Gateway endpoints uses client certificate authentication" classname="/apigateway.tf.aws_api_gateway_stage.api_stage" file="/apigateway.tf">
-			<failure type="failure" message="Ensure AWS API Gateway endpoints uses client certificate authentication">
-Resource: aws_api_gateway_stage.api_stage
-File: /apigateway.tf: 96-103
-Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-2-51
-
-		96  | resource &quot;aws_api_gateway_stage&quot; &quot;api_stage&quot; {
-		97  |   deployment_id = aws_api_gateway_deployment.api_deployment.id
-		98  |   rest_api_id   = aws_api_gateway_rest_api.main.id
-		99  |   stage_name    = var.environment
-		100 | 
-		101 |   # Habilitar X-Ray tracing (solución CKV_AWS_73)
-		102 |   xray_tracing_enabled = true
-		103 | }
-</failure>
-		</testcase>
 		<testcase name="[NONE][CKV_AWS_144] Ensure that S3 bucket has cross-region replication enabled" classname="/s3.tf.aws_s3_bucket.mi_bucket_web" file="/s3.tf">
 			<failure type="failure" message="Ensure that S3 bucket has cross-region replication enabled">
 Resource: aws_s3_bucket.mi_bucket_web
@@ -1813,6 +1789,22 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		21 |     Name = &quot;S3 Website Bucket&quot;
 		22 |   }
 		23 | }
+</failure>
+		</testcase>
+		<testcase name="[NONE][CKV2_AWS_51] Ensure AWS API Gateway endpoints uses client certificate authentication" classname="/apigateway.tf.aws_api_gateway_stage.api_stage" file="/apigateway.tf">
+			<failure type="failure" message="Ensure AWS API Gateway endpoints uses client certificate authentication">
+Resource: aws_api_gateway_stage.api_stage
+File: /apigateway.tf: 96-103
+Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-2-51
+
+		96  | resource &quot;aws_api_gateway_stage&quot; &quot;api_stage&quot; {
+		97  |   deployment_id = aws_api_gateway_deployment.api_deployment.id
+		98  |   rest_api_id   = aws_api_gateway_rest_api.main.id
+		99  |   stage_name    = var.environment
+		100 | 
+		101 |   # Habilitar X-Ray tracing (solución CKV_AWS_73)
+		102 |   xray_tracing_enabled = true
+		103 | }
 </failure>
 		</testcase>
 		<testcase name="[NONE][CKV2_AWS_32] Ensure CloudFront distribution has a response headers policy attached" classname="/cloudfront.tf.aws_cloudfront_distribution.cdn" file="/cloudfront.tf">
@@ -1976,7 +1968,7 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		<testcase name="[NONE][CKV2_AWS_30] Ensure Postgres RDS as aws_db_instance has Query Logging enabled" classname="/rds.tf.aws_db_instance.postgres_db" file="/rds.tf">
 			<failure type="failure" message="Ensure Postgres RDS as aws_db_instance has Query Logging enabled">
 Resource: aws_db_instance.postgres_db
-File: /rds.tf: 2-26
+File: /rds.tf: 2-29
 Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-postgres-rds-has-query-logging-enabled
 
 		2  | resource &quot;aws_db_instance&quot; &quot;postgres_db&quot; {
@@ -1993,17 +1985,20 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		13 | 
 		14 |   # Habilitar Multi-AZ
 		15 |   multi_az             = true
-		16 |   
-		17 |   # Configuración de VPC
-		18 |   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
-		19 |   vpc_security_group_ids = [aws_security_group.rds_sg.id]
-		20 |   
-		21 |   skip_final_snapshot = true
-		22 | 
-		23 |   tags = {
-		24 |     Environment = var.environment
-		25 |   }
-		26 | }
+		16 | 
+		17 |   # Habilitar copia de etiquetas en snapshots
+		18 |   copy_tags_to_snapshot = true
+		19 |   
+		20 |   # Configuración de VPC
+		21 |   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
+		22 |   vpc_security_group_ids = [aws_security_group.rds_sg.id]
+		23 |   
+		24 |   skip_final_snapshot = true
+		25 | 
+		26 |   tags = {
+		27 |     Environment = var.environment
+		28 |   }
+		29 | }
 </failure>
 		</testcase>
 		<testcase name="[NONE][CKV2_AWS_62] Ensure S3 buckets should have event notifications enabled" classname="/s3.tf.aws_s3_bucket.mi_bucket_web" file="/s3.tf">
@@ -2011,37 +2006,6 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 Resource: aws_s3_bucket.mi_bucket_web
 File: /s3.tf: 1-23
 Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-2-62
-
-		1  | resource &quot;aws_s3_bucket&quot; &quot;mi_bucket_web&quot; {
-		2  |   bucket = &quot;primerbuckets3-probandoandojeje&quot;
-		3  | 
-		4  |   website {
-		5  |     index_document = &quot;index.html&quot;
-		6  |     error_document = &quot;index.html&quot;
-		7  | 
-		8  |     routing_rules = jsonencode([
-		9  |       {
-		10 |         Condition = {
-		11 |           HttpErrorCodeReturnedEquals = &quot;404&quot;
-		12 |         },
-		13 |         Redirect = {
-		14 |           ReplaceKeyWith = &quot;index.html&quot;
-		15 |         }
-		16 |       }
-		17 |     ])
-		18 |   }
-		19 | 
-		20 |   tags = {
-		21 |     Name = &quot;S3 Website Bucket&quot;
-		22 |   }
-		23 | }
-</failure>
-		</testcase>
-		<testcase name="[NONE][CKV_AWS_21] Ensure all data stored in the S3 bucket have versioning enabled" classname="/s3.tf.aws_s3_bucket.mi_bucket_web" file="/s3.tf">
-			<failure type="failure" message="Ensure all data stored in the S3 bucket have versioning enabled">
-Resource: aws_s3_bucket.mi_bucket_web
-File: /s3.tf: 1-23
-Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/s3-16-enable-versioning
 
 		1  | resource &quot;aws_s3_bucket&quot; &quot;mi_bucket_web&quot; {
 		2  |   bucket = &quot;primerbuckets3-probandoandojeje&quot;
@@ -2104,6 +2068,37 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 Resource: aws_s3_bucket.mi_bucket_web
 File: /s3.tf: 1-23
 Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/s3-13-enable-logging
+
+		1  | resource &quot;aws_s3_bucket&quot; &quot;mi_bucket_web&quot; {
+		2  |   bucket = &quot;primerbuckets3-probandoandojeje&quot;
+		3  | 
+		4  |   website {
+		5  |     index_document = &quot;index.html&quot;
+		6  |     error_document = &quot;index.html&quot;
+		7  | 
+		8  |     routing_rules = jsonencode([
+		9  |       {
+		10 |         Condition = {
+		11 |           HttpErrorCodeReturnedEquals = &quot;404&quot;
+		12 |         },
+		13 |         Redirect = {
+		14 |           ReplaceKeyWith = &quot;index.html&quot;
+		15 |         }
+		16 |       }
+		17 |     ])
+		18 |   }
+		19 | 
+		20 |   tags = {
+		21 |     Name = &quot;S3 Website Bucket&quot;
+		22 |   }
+		23 | }
+</failure>
+		</testcase>
+		<testcase name="[NONE][CKV_AWS_21] Ensure all data stored in the S3 bucket have versioning enabled" classname="/s3.tf.aws_s3_bucket.mi_bucket_web" file="/s3.tf">
+			<failure type="failure" message="Ensure all data stored in the S3 bucket have versioning enabled">
+Resource: aws_s3_bucket.mi_bucket_web
+File: /s3.tf: 1-23
+Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/s3-16-enable-versioning
 
 		1  | resource &quot;aws_s3_bucket&quot; &quot;mi_bucket_web&quot; {
 		2  |   bucket = &quot;primerbuckets3-probandoandojeje&quot;
