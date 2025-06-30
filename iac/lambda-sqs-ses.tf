@@ -1,10 +1,10 @@
 resource "aws_lambda_function" "sqs_ses_consumer" {
-  function_name = "lambda-sqs-ses-consumer"
-  filename      = "${path.module}/bin/sqsSesConsumer.zip"
+  function_name    = "lambda-sqs-ses-consumer"
+  filename         = "${path.module}/bin/sqsSesConsumer.zip"
   source_code_hash = filebase64sha256("${path.module}/bin/sqsSesConsumer.zip")
-  handler       = "index.handler"
-  runtime       = "nodejs16.x"
-  role          = aws_iam_role.lambda_exec_role.arn
+  handler          = "index.handler"
+  runtime          = "nodejs18.x"  #  Actualizado para evitar runtime obsoleto
+  role             = aws_iam_role.lambda_exec_role.arn
 
   environment {
     variables = {

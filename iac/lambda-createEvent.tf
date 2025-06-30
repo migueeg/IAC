@@ -10,7 +10,7 @@ resource "aws_lambda_function" "create_event" {
   filename         = data.archive_file.lambda_create_event.output_path
   source_code_hash = data.archive_file.lambda_create_event.output_base64sha256
   handler          = "index.handler"
-  runtime          = "nodejs16.x"
+  runtime          = "nodejs18.x"   # Actualizado para evitar runtime obsoleto
   role             = aws_iam_role.lambda_exec_role.arn
   
   vpc_config {
