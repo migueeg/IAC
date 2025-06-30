@@ -3,7 +3,7 @@ resource "aws_lambda_function" "kinesis_consumer" {
   filename         = "${path.module}/bin/kinesisConsumer.zip"
   source_code_hash = filebase64sha256("${path.module}/bin/kinesisConsumer.zip")
   handler          = "index.handler"
-  runtime          = "nodejs16.x"
+  runtime          = "nodejs18.x"  #  Cambiado para evitar runtime obsoleto
   role             = aws_iam_role.lambda_exec_role.arn
 
   environment {

@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
-<testsuites disabled="0" errors="0" failures="78" tests="169" time="0.0">
-	<testsuite disabled="0" errors="0" failures="78" name="terraform scan" skipped="0" tests="169" time="0">
+<testsuites disabled="0" errors="0" failures="77" tests="169" time="0.0">
+	<testsuite disabled="0" errors="0" failures="77" name="terraform scan" skipped="0" tests="169" time="0">
 		<properties>
 			<property name="directory" value="['/app']"/>
 			<property name="add_check" value="False"/>
@@ -70,6 +70,7 @@
 		<testcase name="[NONE][CKV_AWS_45] Ensure no hard-coded secrets exist in lambda environment" classname="/lambda-createEvent.tf.aws_lambda_function.create_event" file="/lambda-createEvent.tf"/>
 		<testcase name="[NONE][CKV_AWS_50] X-Ray tracing is enabled for Lambda" classname="/lambda-createEvent.tf.aws_lambda_function.create_event" file="/lambda-createEvent.tf"/>
 		<testcase name="[NONE][CKV_AWS_45] Ensure no hard-coded secrets exist in lambda environment" classname="/lambda-kinesis-consumer.tf.aws_lambda_function.kinesis_consumer" file="/lambda-kinesis-consumer.tf"/>
+		<testcase name="[NONE][CKV_AWS_363] Ensure Lambda Runtime is not deprecated" classname="/lambda-kinesis-consumer.tf.aws_lambda_function.kinesis_consumer" file="/lambda-kinesis-consumer.tf"/>
 		<testcase name="[NONE][CKV_AWS_117] Ensure that AWS Lambda function is configured inside a VPC" classname="/lambda-loginUser.tf.aws_lambda_function.login_user" file="/lambda-loginUser.tf"/>
 		<testcase name="[NONE][CKV_AWS_45] Ensure no hard-coded secrets exist in lambda environment" classname="/lambda-loginUser.tf.aws_lambda_function.login_user" file="/lambda-loginUser.tf"/>
 		<testcase name="[NONE][CKV_AWS_115] Ensure that AWS Lambda function is configured for function-level concurrent execution limit" classname="/lambda-loginUser.tf.aws_lambda_function.login_user" file="/lambda-loginUser.tf"/>
@@ -105,9 +106,8 @@
 		<testcase name="[NONE][CKV2_AWS_56] Ensure AWS Managed IAMFullAccess IAM policy is not used." classname="/iam-lambda.tf.aws_iam_role_policy_attachment.lambda_sqs_access" file="/iam-lambda.tf"/>
 		<testcase name="[NONE][CKV2_AWS_56] Ensure AWS Managed IAMFullAccess IAM policy is not used." classname="/iam-lambda.tf.aws_iam_role_policy_attachment.lambda_ses_access" file="/iam-lambda.tf"/>
 		<testcase name="[NONE][CKV2_AWS_56] Ensure AWS Managed IAMFullAccess IAM policy is not used." classname="/iam-lambda.tf.aws_iam_role_policy_attachment.lambda_kinesis_access" file="/iam-lambda.tf"/>
-		<testcase name="[NONE][CKV2_AWS_77] Ensure AWS API Gateway Rest API attached WAFv2 WebACL is configured with AMR for Log4j Vulnerability" classname="/apigateway.tf.aws_api_gateway_stage.api_stage" file="/apigateway.tf"/>
 		<testcase name="[NONE][CKV2_AWS_46] Ensure AWS CloudFront Distribution with S3 have Origin Access set to enabled" classname="/cloudfront.tf.aws_cloudfront_distribution.cdn" file="/cloudfront.tf"/>
-		<testcase name="[NONE][CKV2_AWS_19] Ensure that all EIP addresses allocated to a VPC are attached to EC2 instances" classname="/vpc.tf.aws_eip.nat" file="/vpc.tf"/>
+		<testcase name="[NONE][CKV2_AWS_77] Ensure AWS API Gateway Rest API attached WAFv2 WebACL is configured with AMR for Log4j Vulnerability" classname="/apigateway.tf.aws_api_gateway_stage.api_stage" file="/apigateway.tf"/>
 		<testcase name="[NONE][CKV2_AWS_75] Ensure no open CORS policy" classname="/lambda-createEvent.tf.aws_lambda_function.create_event" file="/lambda-createEvent.tf"/>
 		<testcase name="[NONE][CKV2_AWS_75] Ensure no open CORS policy" classname="/lambda-kinesis-consumer.tf.aws_lambda_function.kinesis_consumer" file="/lambda-kinesis-consumer.tf"/>
 		<testcase name="[NONE][CKV2_AWS_75] Ensure no open CORS policy" classname="/lambda-loginUser.tf.aws_lambda_function.login_user" file="/lambda-loginUser.tf"/>
@@ -116,6 +116,7 @@
 		<testcase name="[NONE][CKV2_AWS_44] Ensure AWS route table with VPC peering does not contain routes overly permissive to all traffic" classname="/vpc.tf.aws_route_table.public" file="/vpc.tf"/>
 		<testcase name="[NONE][CKV2_AWS_44] Ensure AWS route table with VPC peering does not contain routes overly permissive to all traffic" classname="/vpc.tf.aws_route_table.private" file="/vpc.tf"/>
 		<testcase name="[NONE][CKV_AWS_57] S3 Bucket has an ACL defined which allows public WRITE access." classname="/s3.tf.aws_s3_bucket.mi_bucket_web" file="/s3.tf"/>
+		<testcase name="[NONE][CKV2_AWS_19] Ensure that all EIP addresses allocated to a VPC are attached to EC2 instances" classname="/vpc.tf.aws_eip.nat" file="/vpc.tf"/>
 		<testcase name="[NONE][CKV2_AWS_40] Ensure AWS IAM policy does not allow full IAM privileges" classname="/iam-lambda.tf.aws_iam_policy.lambda_policy" file="/iam-lambda.tf"/>
 		<testcase name="[NONE][CKV2_AWS_54] Ensure AWS CloudFront distribution is using secure SSL protocols for HTTPS communication" classname="/cloudfront.tf.aws_cloudfront_distribution.cdn" file="/cloudfront.tf"/>
 		<testcase name="[NONE][CKV2_AWS_73] Ensure AWS SQS uses CMK not AWS default keys for encryption" classname="/sqs.tf.aws_sqs_queue.event_queue" file="/sqs.tf"/>
@@ -123,9 +124,9 @@
 		<testcase name="[NONE][CKV_AWS_20] S3 Bucket has an ACL defined which allows public READ access." classname="/s3.tf.aws_s3_bucket.mi_bucket_web" file="/s3.tf"/>
 		<testcase name="[NONE][CKV2_AWS_35] AWS NAT Gateways should be utilized for the default route" classname="/vpc.tf.aws_route_table.public" file="/vpc.tf"/>
 		<testcase name="[NONE][CKV2_AWS_35] AWS NAT Gateways should be utilized for the default route" classname="/vpc.tf.aws_route_table.private" file="/vpc.tf"/>
+		<testcase name="[NONE][CKV2_AWS_16] Ensure that Auto Scaling is enabled on your DynamoDB tables" classname="/lambda-registerEvent.tf.aws_dynamodb_table.tabla_eventos" file="/lambda-registerEvent.tf"/>
 		<testcase name="[NONE][CKV2_AWS_5] Ensure that Security Groups are attached to another resource" classname="/rds.tf.aws_security_group.lambda_sg" file="/rds.tf"/>
 		<testcase name="[NONE][CKV2_AWS_5] Ensure that Security Groups are attached to another resource" classname="/rds.tf.aws_security_group.rds_sg" file="/rds.tf"/>
-		<testcase name="[NONE][CKV2_AWS_16] Ensure that Auto Scaling is enabled on your DynamoDB tables" classname="/lambda-registerEvent.tf.aws_dynamodb_table.tabla_eventos" file="/lambda-registerEvent.tf"/>
 		<testcase name="[NONE][CKV_AWS_19] Ensure all data stored in the S3 bucket is securely encrypted at rest" classname="/s3.tf.aws_s3_bucket.mi_bucket_web" file="/s3.tf"/>
 		<testcase name="[NONE][CKV2_AWS_6] Ensure that S3 bucket has a Public Access block" classname="/s3.tf.aws_s3_bucket.mi_bucket_web" file="/s3.tf"/>
 		<testcase name="[NONE][CKV2_AWS_69] Ensure AWS RDS database instance configured with encryption in transit" classname="/rds.tf.aws_db_instance.postgres_db" file="/rds.tf"/>
@@ -764,7 +765,7 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		3  |   filename         = &quot;${path.module}/bin/kinesisConsumer.zip&quot;
 		4  |   source_code_hash = filebase64sha256(&quot;${path.module}/bin/kinesisConsumer.zip&quot;)
 		5  |   handler          = &quot;index.handler&quot;
-		6  |   runtime          = &quot;nodejs16.x&quot;
+		6  |   runtime          = &quot;nodejs18.x&quot;  #  Cambiado para evitar runtime obsoleto
 		7  |   role             = aws_iam_role.lambda_exec_role.arn
 		8  | 
 		9  |   environment {
@@ -786,7 +787,7 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		3  |   filename         = &quot;${path.module}/bin/kinesisConsumer.zip&quot;
 		4  |   source_code_hash = filebase64sha256(&quot;${path.module}/bin/kinesisConsumer.zip&quot;)
 		5  |   handler          = &quot;index.handler&quot;
-		6  |   runtime          = &quot;nodejs16.x&quot;
+		6  |   runtime          = &quot;nodejs18.x&quot;  #  Cambiado para evitar runtime obsoleto
 		7  |   role             = aws_iam_role.lambda_exec_role.arn
 		8  | 
 		9  |   environment {
@@ -808,7 +809,7 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		3  |   filename         = &quot;${path.module}/bin/kinesisConsumer.zip&quot;
 		4  |   source_code_hash = filebase64sha256(&quot;${path.module}/bin/kinesisConsumer.zip&quot;)
 		5  |   handler          = &quot;index.handler&quot;
-		6  |   runtime          = &quot;nodejs16.x&quot;
+		6  |   runtime          = &quot;nodejs18.x&quot;  #  Cambiado para evitar runtime obsoleto
 		7  |   role             = aws_iam_role.lambda_exec_role.arn
 		8  | 
 		9  |   environment {
@@ -830,7 +831,7 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		3  |   filename         = &quot;${path.module}/bin/kinesisConsumer.zip&quot;
 		4  |   source_code_hash = filebase64sha256(&quot;${path.module}/bin/kinesisConsumer.zip&quot;)
 		5  |   handler          = &quot;index.handler&quot;
-		6  |   runtime          = &quot;nodejs16.x&quot;
+		6  |   runtime          = &quot;nodejs18.x&quot;  #  Cambiado para evitar runtime obsoleto
 		7  |   role             = aws_iam_role.lambda_exec_role.arn
 		8  | 
 		9  |   environment {
@@ -852,29 +853,7 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		3  |   filename         = &quot;${path.module}/bin/kinesisConsumer.zip&quot;
 		4  |   source_code_hash = filebase64sha256(&quot;${path.module}/bin/kinesisConsumer.zip&quot;)
 		5  |   handler          = &quot;index.handler&quot;
-		6  |   runtime          = &quot;nodejs16.x&quot;
-		7  |   role             = aws_iam_role.lambda_exec_role.arn
-		8  | 
-		9  |   environment {
-		10 |     variables = {
-		11 |       STAGE = &quot;dev&quot;
-		12 |     }
-		13 |   }
-		14 | }
-</failure>
-		</testcase>
-		<testcase name="[NONE][CKV_AWS_363] Ensure Lambda Runtime is not deprecated" classname="/lambda-kinesis-consumer.tf.aws_lambda_function.kinesis_consumer" file="/lambda-kinesis-consumer.tf">
-			<failure type="failure" message="Ensure Lambda Runtime is not deprecated">
-Resource: aws_lambda_function.kinesis_consumer
-File: /lambda-kinesis-consumer.tf: 1-14
-Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-363
-
-		1  | resource &quot;aws_lambda_function&quot; &quot;kinesis_consumer&quot; {
-		2  |   function_name    = &quot;lambda-kinesis-consumer&quot;
-		3  |   filename         = &quot;${path.module}/bin/kinesisConsumer.zip&quot;
-		4  |   source_code_hash = filebase64sha256(&quot;${path.module}/bin/kinesisConsumer.zip&quot;)
-		5  |   handler          = &quot;index.handler&quot;
-		6  |   runtime          = &quot;nodejs16.x&quot;
+		6  |   runtime          = &quot;nodejs18.x&quot;  #  Cambiado para evitar runtime obsoleto
 		7  |   role             = aws_iam_role.lambda_exec_role.arn
 		8  | 
 		9  |   environment {
@@ -896,7 +875,7 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		3  |   filename         = &quot;${path.module}/bin/kinesisConsumer.zip&quot;
 		4  |   source_code_hash = filebase64sha256(&quot;${path.module}/bin/kinesisConsumer.zip&quot;)
 		5  |   handler          = &quot;index.handler&quot;
-		6  |   runtime          = &quot;nodejs16.x&quot;
+		6  |   runtime          = &quot;nodejs18.x&quot;  #  Cambiado para evitar runtime obsoleto
 		7  |   role             = aws_iam_role.lambda_exec_role.arn
 		8  | 
 		9  |   environment {
@@ -1929,6 +1908,19 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		23 | }
 </failure>
 		</testcase>
+		<testcase name="[NONE][CKV2_AWS_51] Ensure AWS API Gateway endpoints uses client certificate authentication" classname="/apigateway.tf.aws_api_gateway_stage.api_stage" file="/apigateway.tf">
+			<failure type="failure" message="Ensure AWS API Gateway endpoints uses client certificate authentication">
+Resource: aws_api_gateway_stage.api_stage
+File: /apigateway.tf: 87-91
+Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-2-51
+
+		87 | resource &quot;aws_api_gateway_stage&quot; &quot;api_stage&quot; {
+		88 |   deployment_id = aws_api_gateway_deployment.api_deployment.id
+		89 |   rest_api_id   = aws_api_gateway_rest_api.main.id
+		90 |   stage_name    = var.environment
+		91 | }
+</failure>
+		</testcase>
 		<testcase name="[NONE][CKV_AWS_144] Ensure that S3 bucket has cross-region replication enabled" classname="/s3.tf.aws_s3_bucket.mi_bucket_web" file="/s3.tf">
 			<failure type="failure" message="Ensure that S3 bucket has cross-region replication enabled">
 Resource: aws_s3_bucket.mi_bucket_web
@@ -1958,19 +1950,6 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		21 |     Name = &quot;S3 Website Bucket&quot;
 		22 |   }
 		23 | }
-</failure>
-		</testcase>
-		<testcase name="[NONE][CKV2_AWS_51] Ensure AWS API Gateway endpoints uses client certificate authentication" classname="/apigateway.tf.aws_api_gateway_stage.api_stage" file="/apigateway.tf">
-			<failure type="failure" message="Ensure AWS API Gateway endpoints uses client certificate authentication">
-Resource: aws_api_gateway_stage.api_stage
-File: /apigateway.tf: 87-91
-Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-2-51
-
-		87 | resource &quot;aws_api_gateway_stage&quot; &quot;api_stage&quot; {
-		88 |   deployment_id = aws_api_gateway_deployment.api_deployment.id
-		89 |   rest_api_id   = aws_api_gateway_rest_api.main.id
-		90 |   stage_name    = var.environment
-		91 | }
 </failure>
 		</testcase>
 		<testcase name="[NONE][CKV2_AWS_32] Ensure CloudFront distribution has a response headers policy attached" classname="/cloudfront.tf.aws_cloudfront_distribution.cdn" file="/cloudfront.tf">
@@ -2027,37 +2006,6 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		50 | 
 		51 |   depends_on = [aws_s3_bucket_policy.bucket_oai_policy]
 		52 | }</failure>
-		</testcase>
-		<testcase name="[NONE][CKV_AWS_145] Ensure that S3 buckets are encrypted with KMS by default" classname="/s3.tf.aws_s3_bucket.mi_bucket_web" file="/s3.tf">
-			<failure type="failure" message="Ensure that S3 buckets are encrypted with KMS by default">
-Resource: aws_s3_bucket.mi_bucket_web
-File: /s3.tf: 1-23
-Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-s3-buckets-are-encrypted-with-kms-by-default
-
-		1  | resource &quot;aws_s3_bucket&quot; &quot;mi_bucket_web&quot; {
-		2  |   bucket = &quot;primerbuckets3-probandoandojeje&quot;
-		3  | 
-		4  |   website {
-		5  |     index_document = &quot;index.html&quot;
-		6  |     error_document = &quot;index.html&quot;
-		7  | 
-		8  |     routing_rules = jsonencode([
-		9  |       {
-		10 |         Condition = {
-		11 |           HttpErrorCodeReturnedEquals = &quot;404&quot;
-		12 |         },
-		13 |         Redirect = {
-		14 |           ReplaceKeyWith = &quot;index.html&quot;
-		15 |         }
-		16 |       }
-		17 |     ])
-		18 |   }
-		19 | 
-		20 |   tags = {
-		21 |     Name = &quot;S3 Website Bucket&quot;
-		22 |   }
-		23 | }
-</failure>
 		</testcase>
 		<testcase name="[NONE][CKV2_AWS_11] Ensure VPC flow logging is enabled in all VPCs" classname="/vpc.tf.aws_vpc.main_vpc" file="/vpc.tf">
 			<failure type="failure" message="Ensure VPC flow logging is enabled in all VPCs">
@@ -2116,6 +2064,37 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		44 |   http_method   = &quot;POST&quot;
 		45 |   authorization = &quot;NONE&quot;
 		46 | }
+</failure>
+		</testcase>
+		<testcase name="[NONE][CKV_AWS_145] Ensure that S3 buckets are encrypted with KMS by default" classname="/s3.tf.aws_s3_bucket.mi_bucket_web" file="/s3.tf">
+			<failure type="failure" message="Ensure that S3 buckets are encrypted with KMS by default">
+Resource: aws_s3_bucket.mi_bucket_web
+File: /s3.tf: 1-23
+Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-s3-buckets-are-encrypted-with-kms-by-default
+
+		1  | resource &quot;aws_s3_bucket&quot; &quot;mi_bucket_web&quot; {
+		2  |   bucket = &quot;primerbuckets3-probandoandojeje&quot;
+		3  | 
+		4  |   website {
+		5  |     index_document = &quot;index.html&quot;
+		6  |     error_document = &quot;index.html&quot;
+		7  | 
+		8  |     routing_rules = jsonencode([
+		9  |       {
+		10 |         Condition = {
+		11 |           HttpErrorCodeReturnedEquals = &quot;404&quot;
+		12 |         },
+		13 |         Redirect = {
+		14 |           ReplaceKeyWith = &quot;index.html&quot;
+		15 |         }
+		16 |       }
+		17 |     ])
+		18 |   }
+		19 | 
+		20 |   tags = {
+		21 |     Name = &quot;S3 Website Bucket&quot;
+		22 |   }
+		23 | }
 </failure>
 		</testcase>
 		<testcase name="[NONE][CKV2_AWS_47] Ensure AWS CloudFront attached WAFv2 WebACL is configured with AMR for Log4j Vulnerability" classname="/cloudfront.tf.aws_cloudfront_distribution.cdn" file="/cloudfront.tf">
@@ -2203,11 +2182,11 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		23 | }
 </failure>
 		</testcase>
-		<testcase name="[NONE][CKV2_AWS_62] Ensure S3 buckets should have event notifications enabled" classname="/s3.tf.aws_s3_bucket.mi_bucket_web" file="/s3.tf">
-			<failure type="failure" message="Ensure S3 buckets should have event notifications enabled">
+		<testcase name="[NONE][CKV2_AWS_61] Ensure that an S3 bucket has a lifecycle configuration" classname="/s3.tf.aws_s3_bucket.mi_bucket_web" file="/s3.tf">
+			<failure type="failure" message="Ensure that an S3 bucket has a lifecycle configuration">
 Resource: aws_s3_bucket.mi_bucket_web
 File: /s3.tf: 1-23
-Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-2-62
+Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-2-61
 
 		1  | resource &quot;aws_s3_bucket&quot; &quot;mi_bucket_web&quot; {
 		2  |   bucket = &quot;primerbuckets3-probandoandojeje&quot;
@@ -2234,11 +2213,11 @@ Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aw
 		23 | }
 </failure>
 		</testcase>
-		<testcase name="[NONE][CKV2_AWS_61] Ensure that an S3 bucket has a lifecycle configuration" classname="/s3.tf.aws_s3_bucket.mi_bucket_web" file="/s3.tf">
-			<failure type="failure" message="Ensure that an S3 bucket has a lifecycle configuration">
+		<testcase name="[NONE][CKV2_AWS_62] Ensure S3 buckets should have event notifications enabled" classname="/s3.tf.aws_s3_bucket.mi_bucket_web" file="/s3.tf">
+			<failure type="failure" message="Ensure S3 buckets should have event notifications enabled">
 Resource: aws_s3_bucket.mi_bucket_web
 File: /s3.tf: 1-23
-Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-2-61
+Guideline: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-2-62
 
 		1  | resource &quot;aws_s3_bucket&quot; &quot;mi_bucket_web&quot; {
 		2  |   bucket = &quot;primerbuckets3-probandoandojeje&quot;
