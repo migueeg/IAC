@@ -88,6 +88,9 @@ resource "aws_api_gateway_stage" "api_stage" {
   deployment_id = aws_api_gateway_deployment.api_deployment.id
   rest_api_id   = aws_api_gateway_rest_api.main.id
   stage_name    = var.environment
+
+  # Habilitar X-Ray tracing (solución CKV_AWS_73)
+  xray_tracing_enabled = true
 }
 
 # Permisos Lambda para invocación desde API Gateway
@@ -114,4 +117,3 @@ resource "aws_lambda_permission" "api_gateway_register_event" {
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.main.execution_arn}/*/POST/register"
 }
-
