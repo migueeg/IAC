@@ -1,53 +1,104 @@
 pipeline {
-    agent any
+  agent { label 'govench' }
 
-    environment {
-        TF_IN_AUTOMATION = 'true'
+  environment {
+    AWS_REGION          = "us-east-1"
+    TF_DIR              = "iac"
+
+    AWS_CREDENTIALS     = credentials('aws-credentials')
+    AWS_SESSION_TOKEN   = credentials('aws-session-token')
+
+    DOCKER_HOST         = "tcp://docker-agent:50000"
+  }
+
+  stages {
+    stage('Checkout Repo') {
+      steps {
+        git url: 'https://github.com/migueeg/IAC.git', branch: 'develop'
+      }
     }
 
-    stages {
-        stage('Clonar Repositorio') {
-            steps {
-                git branch: 'develop', url: 'https://github.com/migueeg/IAC.git'
+    stage('Install & Test Lambdas') {
+      steps {
+        script {
+          def lambdas = [
+            "lambda_create_event",
+            "lambda_login_user",
+            "lambda_sqs_ses_consumer"
+          ]
+
+          for (lambdaDir in lambdas) {
+            dir(lambdaDir) {
+              sh 'npm install'
+              sh 'npm test'
             }
+          }
         }
-
-        stage('Terraform Init') {
-            steps {
-                withCredentials([
-                    string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
-                    string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
-                    string(credentialsId: 'AWS_SESSION_TOKEN', variable: 'AWS_SESSION_TOKEN')
-                ]) {
-                    sh '''
-                        export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-                        export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-                        export AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN
-
-                        cd iac
-                        terraform init
-                    '''
-                }
-            }
-        }
-
-        stage('Terraform Plan') {
-            steps {
-                withCredentials([
-                    string(credentialsId: 'AWS_ACCESS_KEY_ID', variable: 'AWS_ACCESS_KEY_ID'),
-                    string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
-                    string(credentialsId: 'AWS_SESSION_TOKEN', variable: 'AWS_SESSION_TOKEN')
-                ]) {
-                    sh '''
-                        export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-                        export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-                        export AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN
-
-                        cd iac
-                        terraform plan
-                    '''
-                }
-            }
-        }
+      }
     }
+
+    stage('Build Lambdas') {
+      steps {
+        script {
+          def lambdas = [
+            "lambda_create_event",
+            "lambda_login_user",
+            "lambda_sqs_ses_consumer"
+          ]
+
+          for (lambdaDir in lambdas) {
+            dir(lambdaDir) {
+              sh '''
+                npm install --omit=dev
+                zip -r ${lambdaDir}.zip .
+              '''
+            }
+          }
+        }
+      }
+    }
+
+    stage('Terraform Init & Apply') {
+      steps {
+        dir("${env.TF_DIR}") {
+          sh '''
+            export AWS_ACCESS_KEY_ID=${AWS_CREDENTIALS_USR}
+            export AWS_SECRET_ACCESS_KEY=${AWS_CREDENTIALS_PSW}
+            export AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
+            terraform init
+            terraform apply -auto-approve
+          '''
+        }
+      }
+
+      post {
+        failure {
+          echo '💥 terraform apply falló. Ejecutando terraform destroy automáticamente...'
+          dir("${env.TF_DIR}") {
+            sh '''
+              export AWS_ACCESS_KEY_ID=${AWS_CREDENTIALS_USR}
+              export AWS_SECRET_ACCESS_KEY=${AWS_CREDENTIALS_PSW}
+              export AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
+              terraform destroy -auto-approve
+            '''
+          }
+        }
+      }
+    }
+
+    stage('Destroy Infra') {
+      steps {
+        echo '⏳ Esperando 10 minutos antes de destruir la infraestructura...'
+        sleep time: 10, unit: 'MINUTES'
+        dir("${env.TF_DIR}") {
+          sh '''
+            export AWS_ACCESS_KEY_ID=${AWS_CREDENTIALS_USR}
+            export AWS_SECRET_ACCESS_KEY=${AWS_CREDENTIALS_PSW}
+            export AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
+            terraform destroy -auto-approve
+          '''
+        }
+      }
+    }
+  }
 }

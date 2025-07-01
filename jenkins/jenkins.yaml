@@ -1,0 +1,95 @@
+security:
+  globalJobDslSecurityConfiguration:
+    useScriptSecurity: false
+
+jenkins:
+  systemMessage: "Jenkins configurado automáticamente para Govench."
+  numExecutors: 2
+  remotingSecurity:
+    enabled: true
+
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: admin
+          name: Administrator
+          password: admin123
+
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+
+  clouds:
+    - docker:
+        name: "docker-cloud"
+        dockerApi:
+          dockerHost:
+            uri: "tcp://docker-agent:50000"
+        templates:
+          - labelString: "govench"
+            name: "govench-agent-template"
+            remoteFs: "/home/jenkins/agent"
+            instanceCapStr: "1"
+            mode: NORMAL
+            retentionStrategy:
+              idleMinutes: 10
+            connector:
+              attach: {}
+            dockerTemplateBase:
+              image: migueleg23/agent-jenkins:latest
+              dnsHosts:
+                - "8.8.8.8"
+              extraHosts:
+                - "jenkins-master:172.18.0.2"
+
+unclassified:
+  location:
+    url: "http://jenkins-master:8080"
+
+credentials:
+  system:
+    domainCredentials:
+      - domain:
+          name: "_"
+          description: "Global credentials"
+        credentials:
+          - usernamePassword:
+              id: "aws-credentials"
+              username: "${AWS_ACCESS_KEY_ID}"
+              password: "${AWS_SECRET_ACCESS_KEY}"
+              description: "AWS credentials for Terraform and Lambda deploy"
+          - string:
+              id: "aws-session-token"
+              secret: "${AWS_SESSION_TOKEN}"
+              description: "AWS session token"
+
+jobs:
+  - script: >
+      freeStyleJob('seed-job') {
+        description('Seed job que crea el pipeline principal para Govench.')
+        steps {
+          dsl {
+            text("""
+              pipelineJob('govench-ci-pipeline') {
+                description('Pipeline CI/CD para Govench.')
+                definition {
+                  cpsScm {
+                    scm {
+                      git {
+                        remote {
+                          url('https://github.com/migueeg/IAC.git')
+                        }
+                        branches('develop')
+                      }
+                      scriptPath('jenkins/Jenkinsfile')
+                    }
+                  }
+                }
+              }
+              """)
+            sandbox: true
+            removeAction('IGNORE')
+          }
+        }
+      }
