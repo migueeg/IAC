@@ -48,10 +48,10 @@ pipeline {
 
           for (lambdaDir in lambdas) {
             dir(lambdaDir) {
-              sh '''
+              sh """
                 npm install --omit=dev
                 zip -r ${lambdaDir}.zip .
-              '''
+              """
             }
           }
         }
