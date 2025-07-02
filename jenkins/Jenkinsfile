@@ -19,30 +19,6 @@ pipeline {
     }
 
     stage('Checkov Scan') {
-    steps {
-      script {
-        sh 'mkdir -p results'
-
-        sh '''
-          docker run --rm \
-            -v $PWD/iac:/app \
-            -v $PWD/results:/output \
-            bridgecrew/checkov \
-            --directory /app \
-            -o junitxml \
-            --output-file-path /output/results.xml \
-            --skip-check CKV_AWS_309
-        '''
-      }
-    }
-    post {
-      always {
-        junit allowEmptyResults: true, testResults: 'results/results.xml'
-      }
-    }
-  }
-
-    stage('Checkov Scan') {
       steps {
         script {
           sh 'mkdir -p results'
