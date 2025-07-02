@@ -6,7 +6,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "aws-sdk": "^2.1692.0"
+    "@aws-sdk/client-ses": "^3.0.0"
   },
   "keywords": [],
   "author": "",

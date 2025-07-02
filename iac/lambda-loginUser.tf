@@ -6,14 +6,17 @@ data "archive_file" "lambda_login_user" {
   output_path = "${path.module}/bin/loginUser.zip" 
 }
 
-# Definición de la función Lambda
-# Este recurso crea la función Lambda en AWS
 resource "aws_lambda_function" "login_user" {
+  # checkov:skip=CKV_AWS_272 Code signing unnecessary for local testing environment
+  # checkov:skip=CKV_AWS_116 Dead Letter Queue unnecessary for local testing environment
+  # checkov:skip=CKV_AWS_50 X-Ray tracing unnecessary for local testing environment
+  # checkov:skip=CKV_AWS_173 Environment variable encryption unnecessary for local testing
+  # checkov:skip=CKV_AWS_115 Concurrent execution limits unnecessary for local testing environment
   filename         = data.archive_file.lambda_login_user.output_path  
   function_name    = "lambda-login-user"    
   role            = aws_iam_role.lambda_exec_role.arn  
   handler         = "index.handler"        
-  runtime         = "nodejs16.x"         
+  runtime         = "nodejs18.x"         
   
   # Hash del código fuente para detectar cambios
   source_code_hash = data.archive_file.lambda_login_user.output_base64sha256

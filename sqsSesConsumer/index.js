@@ -1,7 +1,7 @@
-const AWS = require("aws-sdk");
+const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses");
 
 exports.handler = async (event, context, callback, injectedSes) => {
-  const sesInstance = injectedSes || new AWS.SES();
+  const sesClient = injectedSes || new SESClient({});
 
   for (const record of event.Records) {
     const messageBody = record.body;
@@ -24,7 +24,8 @@ exports.handler = async (event, context, callback, injectedSes) => {
     };
 
     try {
-      await sesInstance.sendEmail(params).promise();
+      const command = new SendEmailCommand(params);
+      await sesClient.send(command);
       console.log("Correo enviado con éxito.");
     } catch (error) {
       console.error("Error al enviar correo:", error);
