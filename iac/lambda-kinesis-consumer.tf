@@ -6,6 +6,8 @@ resource "aws_lambda_function" "kinesis_consumer" {
   runtime          = "nodejs16.x"
   role             = aws_iam_role.lambda_exec_role.arn
 
+  reserved_concurrent_executions = 5
+
   environment {
     variables = {
       STAGE = "dev"
