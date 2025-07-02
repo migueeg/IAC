@@ -14,7 +14,7 @@ jenkins:
       users:
         - id: admin
           name: Administrator
-          password: admin123
+          password: admin
 
   authorizationStrategy:
     loggedInUsersCanDoAnything:
@@ -66,8 +66,8 @@ credentials:
 
 jobs:
   - script: >
-      freeStyleJob('seed-job') {
-        description('Seed job que crea el pipeline principal para Govench.')
+      freeStyleJob('pipeline-seeder') {
+        description('pipeline seeder realiza la creacion del pipeline para Govench api.')
         steps {
           dsl {
             text("""
