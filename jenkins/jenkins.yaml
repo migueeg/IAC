@@ -80,7 +80,7 @@ jobs:
                         remote {
                           url('https://github.com/migueeg/IAC.git')
                         }
-                        branches('develop')
+                        branches('feature/jenkins')
                       }
                       scriptPath('jenkins/Jenkinsfile')
                     }

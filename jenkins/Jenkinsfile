@@ -2,7 +2,7 @@ pipeline {
   agent { label 'govench' }
 
   environment {
-    AWS_REGION          = "us-east-1"
+    AWS_REGION          = "us-east-2"
     TF_DIR              = "iac"
 
     AWS_CREDENTIALS     = credentials('aws-credentials')
@@ -14,7 +14,7 @@ pipeline {
   stages {
     stage('Checkout Repo') {
       steps {
-        git url: 'https://github.com/migueeg/IAC.git', branch: 'develop'
+        git url: 'https://github.com/migueeg/IAC.git', branch: 'feature/jenkins'
       }
     }
 
@@ -22,9 +22,9 @@ pipeline {
       steps {
         script {
           def lambdas = [
-            "lambda_create_event",
-            "lambda_login_user",
-            "lambda_sqs_ses_consumer"
+            "createEvent",  
+            "loginUser",
+            "sqsSesConsumer"
           ]
 
           for (lambdaDir in lambdas) {
@@ -41,9 +41,9 @@ pipeline {
       steps {
         script {
           def lambdas = [
-            "lambda_create_event",
-            "lambda_login_user",
-            "lambda_sqs_ses_consumer"
+            "createEvent",
+            "loginUser",
+            "sqsSesConsumer"
           ]
 
           for (lambdaDir in lambdas) {
