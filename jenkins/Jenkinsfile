@@ -2,19 +2,27 @@ pipeline {
   agent { label 'govench' }
 
   environment {
-    AWS_REGION          = "us-east-2"
-    TF_DIR              = "iac"
+    AWS_REGION        = "us-east-2"
+    TF_DIR            = "iac"
 
-    AWS_CREDENTIALS     = credentials('aws-credentials')
-    AWS_SESSION_TOKEN   = credentials('aws-session-token')
+    AWS_CREDENTIALS   = credentials('aws-credentials')
+    AWS_SESSION_TOKEN = credentials('aws-session-token')
 
-    DOCKER_HOST         = "tcp://docker-agent:50000"
+    DOCKER_HOST       = "tcp://docker-agent:50000"
   }
 
   stages {
-    stage('Checkout Repo') {
+    stage('Checkout Repo Principal') {
       steps {
         git url: 'https://github.com/migueeg/IAC.git', branch: 'fix/final'
+      }
+    }
+
+    stage('Checkout Checkov Branch') {
+      steps {
+        dir('checkov-code') {
+          git url: 'https://github.com/migueeg/IAC.git', branch: 'fix/checkov2'
+        }
       }
     }
 
@@ -25,7 +33,7 @@ pipeline {
 
           sh '''
             docker run --rm \
-              -v $PWD/iac:/app \
+              -v $PWD/checkov-code/iac:/app \
               -v $PWD/results:/output \
               bridgecrew/checkov \
               --directory /app \
@@ -42,16 +50,10 @@ pipeline {
       }
     }
 
-
     stage('Install & Test Lambdas') {
       steps {
         script {
-          def lambdas = [
-            "createEvent",  
-            "loginUser",
-            "sqsSesConsumer"
-          ]
-
+          def lambdas = ["createEvent", "loginUser", "sqsSesConsumer"]
           for (lambdaDir in lambdas) {
             dir(lambdaDir) {
               sh 'npm install'
@@ -65,18 +67,13 @@ pipeline {
     stage('Build Lambdas') {
       steps {
         script {
-          def lambdas = [
-            "createEvent",
-            "loginUser",
-            "sqsSesConsumer"
-          ]
-
+          def lambdas = ["createEvent", "loginUser", "sqsSesConsumer"]
           for (lambdaDir in lambdas) {
             dir(lambdaDir) {
-              sh """
+              sh '''
                 npm install --omit=dev
                 zip -r ${lambdaDir}.zip .
-              """
+              '''
             }
           }
         }
