@@ -3,6 +3,11 @@ resource "aws_cloudfront_origin_access_identity" "oai" {
 }
 
 resource "aws_cloudfront_distribution" "cdn" {
+  # checkov:skip=CKV_AWS_174 Certificado por defecto permitido en entorno de pruebas
+  # checkov:skip=CKV_AWS_310 Failover innecesario para entorno estático y de pruebas
+  # checkov:skip=CKV_AWS_374 No se requiere restricción geográfica en entorno de pruebas
+  # checkov:skip=CKV_AWS_86 Logging innecesario para entorno de desarrollo
+  # checkov:skip=CKV_AWS_68 WAF no requerido en entorno local o sin tráfico real
   origin {
     domain_name = aws_s3_bucket.mi_bucket_web.bucket_regional_domain_name
     origin_id   = "S3Origin"

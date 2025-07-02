@@ -1,4 +1,5 @@
 resource "aws_s3_bucket_object" "frontend_files" {
+  # checkov:skip=CKV_AWS_186 Cifrado con CMK no necesario para archivos estáticos en entorno local
   for_each = fileset("${path.module}/../frontend", "*/")
 
   bucket = aws_s3_bucket.mi_bucket_web.bucket

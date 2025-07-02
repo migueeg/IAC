@@ -17,6 +17,8 @@ resource "aws_iam_role" "lambda_exec_role" {
 
 # Política con permisos para CloudWatch Logs y RDS
 resource "aws_iam_policy" "lambda_policy" {
+  # checkov:skip=CKV_AWS_290 Acceso de escritura necesario para Lambda en entorno de pruebas
+  # checkov:skip=CKV_AWS_355 Uso de "*" necesario en entorno de desarrollo donde los ARNs no son fijos
   name = "lambda_policy"
 
   policy = jsonencode({
